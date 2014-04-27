@@ -1,5 +1,8 @@
 <?php namespace Framework\Logging;
 
+use Framework\Exception\CustomException;
+use Framework\Config\Config;
+
 class Log {
     /**
      * Appends the error to the log file.
@@ -7,13 +10,13 @@ class Log {
      * @throws Exception if the file couldn't be opened.
      */
     public static function error($msg) {
-        $file = 'logs/error.log';
+        $file = Config::get("logs:error");
 
         if ($f = fopen($file, 'a')) {
             fwrite($f, $msg."\r\n");
             fclose($f);
         } else {
-            throw new Exception("Couldn't write to the log file. Do you have permissions?");
+            throw new CustomException("Couldn't write to the log file. Do you have permissions?");
         }
     }
 }
