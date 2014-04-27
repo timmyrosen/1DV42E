@@ -1,10 +1,9 @@
 <?php
-/* config */
-require('config.php');
-
 /* libs */
+require('vendors/framework/config/Config.php');
 require('vendors/framework/logging/Log.php');
 require('vendors/framework/debugging/Debug.php');
+require('vendors/framework/exception/CustomException.php');
 require('vendors/framework/routing/Router.php');
 require('vendors/framework/database/Database.php');
 
@@ -21,6 +20,7 @@ assert_options(ASSERT_CALLBACK, '\Framework\Debugging\Debug::assertCallback');
 
 /* Application */
 try {
+    require('app/filters.php');
     require('app/routes.php');
 } catch (Exception $ex) {
     \Framework\Debugging\Debug::Shout($ex);
