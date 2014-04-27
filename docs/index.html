@@ -8,10 +8,40 @@
   </ul>
 
   <h2><a id="#routing">Routing</a></h2>
-  <p>Routing is some lovely shiet.</p>
+  <p>Routing is a lovely thingy.</p>
   <h3>The basics</h3>
 
   <code>
+    Router::get("/", function() {
+      echo "Hello world!";
+    }
+
     Router::get("/", "RootController:index");
+
+    Separate controllers from methods with ":", "@" and "."
+
+    Router::post("/users", "Users:new");
+
+    Router::put("/users", "Users:update");
+
+    Router::any("/about", "AboutController:method");
+
+    Router::match(array("post", "get", "/about", "AboutController:method"));
+
+    Router::get("/users/:id", "Users:show");
+    :id, :int
+    :name, :string
+    :any
+
+    Router::resource("/users", "UsersController");
+
+    Router::get("/home", "HomeController:index")->scope("MyApp");
+
+    Router::group(function() {
+      Router::get("/home", "HomeController:index");
+      Router::get("/about", "AboutController:index");
+    })->scope("MyApp");
+
+    Router::get("/members", "MembersController:index")->before("authenticate");
   </code>
 </div>
