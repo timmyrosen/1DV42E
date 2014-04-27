@@ -1,12 +1,14 @@
 <?php namespace Framework\Routing;
 
-use \Exception;
+use Framework\Exception\CustomException;
 use \Closure;
 
+require('Filter.php');
 require('Route.php');
 
 /**
  * @todo  http://laravel.com/docs/routing, match, any, support https, optional variable
+ * 
  * ->protocol("https")
  */
 
@@ -22,6 +24,18 @@ class Router {
      * @var  array
      */
     private static $filters = array();
+
+    /**
+     * Contains all before filters.
+     * @var  array
+     */
+    private static $befores = array();
+
+    /**
+     * Contains all afters filters.
+     * @var  array
+     */
+    private static $afters = array();
 
     /**
      * Stores the instance of the class.
@@ -77,16 +91,43 @@ class Router {
         return self::$self;
     }
 
+    /**
+     * Before method.
+     * @param   string  $method
+     * @return  Router
+     */
     public function before($method) {
         foreach (self::$filters as $filter) {
             if ($filter->getName() == $method) {
-                call_user_func_array($filter->getCallback(), array());
+                self::$befores[] = $filter;
             }
         }
 
         return self::$self;
     }
 
+    /**
+     * After method.
+     * @param   string  $method
+     * @return  Router
+     */
+    public function after($method) {
+        foreach (self::$filters as $filter) {
+            if ($filter->getName() == $method) {
+                self::$afters[] = $filter;
+            }
+        }
+
+        return self::$self;
+    }
+
+    /**
+     * Filter method which is runned when a user creates a
+     * new filter.
+     * @param   string   $name
+     * @param   Closure  $callback
+     * @return  void
+     */
     public static function filter($name, $callback) {
         self::$filters[] = new Filter($name, $callback);
     }
@@ -167,7 +208,7 @@ class Router {
      */
     public static function resource($path, $callback) {
         if ($callback instanceof Closure) {
-            throw new Exception("Your resource callback must be a string. Please type a controller.");
+            throw new CustomException("Your resource callback must be a string. Please type a controller.");
         }
 
         // set up the resource in a RESTful way based on the path.
@@ -270,7 +311,17 @@ class Router {
                         $controller = $route->getScope().'\\'.$controller;
                     }
 
+                    // run all befores
+                    foreach (self::$befores as $before) {
+                        call_user_func_array($before->getCallback(), array());
+                    }
+
                     call_user_func_array(array(new $controller, $function), $route->getParams());
+
+                    // run all afters
+                    foreach (self::$afters as $after) {
+                        call_user_func_array($after->getCallback(), array());
+                    }
 
                     $pathFound = true;
                 }
