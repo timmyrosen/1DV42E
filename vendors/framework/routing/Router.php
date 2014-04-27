@@ -7,8 +7,8 @@ require('Filter.php');
 require('Route.php');
 
 /**
- * @todo  http://laravel.com/docs/routing, match, any, support https, optional variable
- * 
+ * @todo  support https, optional variable (:id?)
+ * 'SERVER_PROTOCOL' => string 'HTTP/1.1'
  * ->protocol("https")
  */
 
@@ -61,6 +61,7 @@ class Router {
      * so it can be accessed and returned by static functions.
      */
     public function __construct() {
+        var_dump($_SERVER);
         self::$self = $this;
     }
 
@@ -88,6 +89,7 @@ class Router {
         else {
             $self::$routes[Count($self::$routes)-1]->setScope($scope);
         }
+
         return self::$self;
     }
 
@@ -130,6 +132,38 @@ class Router {
      */
     public static function filter($name, $callback) {
         self::$filters[] = new Filter($name, $callback);
+    }
+
+    /**
+     * Match method. Lets the user pass an array with
+     * the request methods used to set up a path.
+     * @param   Array           $methods   e.g: array("get", "post")
+     * @param   string          $path
+     * @param   string|Closure  $callback
+     * @return  Router
+     */
+    public static function match(Array $methods, $path, $callback) {
+        foreach ($methods as $method) {
+            self::addRoute($method, $path, $callback);
+        }
+
+        return self::$self;
+    }
+
+    /**
+     * Any method.
+     * @param   string  $path
+     * @param   string|Closure  $callback
+     * @return  void
+     */
+    public static function any($path, $callback) {
+        self::addRoute('GET',       $path,    $callback);
+        self::addRoute('POST',      $path,    $callback);
+        self::addRoute('PUT',       $path,    $callback);
+        self::addRoute('PATCH',     $path,    $callback);
+        self::addRoute('DELETE',    $path,    $callback);
+
+        return self::$self;
     }
 
     /**
@@ -224,15 +258,26 @@ class Router {
         return self::$self;
     }
 
+    /**
+     * Group method.
+     * @param   Closure  $callback
+     * @return  Router
+     */
     public static function group($callback) {
         self::$indexCount = true;
         self::$currentIndex = Count(self::$routes);
 
-        call_user_func_array($callback, array());
+        call_user_func($callback, array());
         
         return self::$self;
     }
 
+    /**
+     * Add a route to the routes array.
+     * @param  string          $method
+     * @param  string          $path
+     * @param  string|Closure  $callback
+     */
     private static function addRoute($method, $path, $callback) {
         assert(!empty($method), 'Missing method.');
         assert(!empty($path), 'Missing path.');
@@ -256,6 +301,7 @@ class Router {
                 'callback'  => $route->getCallback()
             );
         }
+
         return $return;
     }
 
@@ -283,11 +329,13 @@ class Router {
         }
 
         $return .= '</table>';
+
         return $return;
     }
 
     /**
      * The main function which triggers the Router.
+     * @return  void
      */
     public static function run() {
         $pathFound = false;
@@ -299,10 +347,11 @@ class Router {
         foreach (self::$routes as $route) {
             if ($route->matchPath($uri, $method)) {
                 if ($route->getCallback() instanceof Closure) {
-                    call_user_func_array($route->getCallback(), $route->getParams());
+                    call_user_func($route->getCallback(), $route->getParams());
 
                     $pathFound = true;
                 } else {
+                    // split controller from method.
                     $r = preg_split('/\:|\.|\@/', $route->getCallback(), 2);
                     $controller = $r[0];
                     $function = $r[1];
@@ -313,14 +362,14 @@ class Router {
 
                     // run all befores
                     foreach (self::$befores as $before) {
-                        call_user_func_array($before->getCallback(), array());
+                        call_user_func($before->getCallback(), array());
                     }
 
-                    call_user_func_array(array(new $controller, $function), $route->getParams());
+                    call_user_func(array(new $controller, $function), $route->getParams());
 
                     // run all afters
                     foreach (self::$afters as $after) {
-                        call_user_func_array($after->getCallback(), array());
+                        call_user_func($after->getCallback(), array());
                     }
 
                     $pathFound = true;

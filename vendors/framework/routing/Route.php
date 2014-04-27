@@ -66,7 +66,7 @@ class Route {
             '(.*)'
         );
 
-        $this->pattern = preg_replace($pattern, $replace , $path);
+        $this->pattern = preg_replace($pattern, $replace, $path);
     }
 
     /**
