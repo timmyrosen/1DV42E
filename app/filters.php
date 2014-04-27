@@ -1,9 +1,10 @@
 <?php
 use Framework\Routing\Router;
+use Framework\Config\Config;
 
-Router::filter('authentication', function() {
+Router::filter('authenticate', function() {
     if (isset($_SESSION['auth'])) {
         return true;
     }
-    return false;
+    header("Location: ".Config::get("path")."/signin");
 });
