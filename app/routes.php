@@ -1,13 +1,9 @@
 <?php
 use Framework\Routing\Router;
 
-Router::get("/", "RootController:index");
+Router::get("/", "HomeController:index");
 
-Router::match(array('post', 'get'), '/testar', 'RootController:index');
-
-Router::any("/wiho", function() {
-    echo "wiho";
-});
+Router::resource("stores", "StoresController");
 
 Router::group(function() {
     Router::get("/home", "HomeController:index");
@@ -15,13 +11,9 @@ Router::group(function() {
     Router::get("/home/:name/:id", function($name, $id) {
         echo $name;
         echo $id;
-    });
+    })->https();
 
     Router::resource("users", "UsersController");
-
-    Router::get("/test", "TestController:index");
-})->scope("mittrum");
+})->scope("admin");
 
 Router::run();
-
-echo '<pre>'.Router::getRoutesToString().'</pre>';

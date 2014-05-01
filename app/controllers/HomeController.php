@@ -1,7 +1,9 @@
 <?php
 
+use Framework\Routing\Router;
+
 class HomeController {
     public function index() {
-        echo 'Home controller';
+        echo '<pre>'.Router::getRoutesToString().'</pre>';
     }
 }
