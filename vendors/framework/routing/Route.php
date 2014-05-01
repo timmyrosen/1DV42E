@@ -11,6 +11,8 @@ class Route {
     private $params;
     private $scope;
     private $before;
+    private $after;
+    private $https;
 
     /**
      * Construct.
@@ -104,6 +106,17 @@ class Route {
         $this->before = $action;
     }
 
+    public function setAfter($action) {
+        $this->after = $action;
+    }
+
+    /**
+     * Set https.
+     */
+    public function setHttps() {
+        $this->https = true;
+    }
+
     /**
      * Get method.
      * @return  string
@@ -158,6 +171,18 @@ class Route {
      */
     public function getBefore() {
         return $this->before;
+    }
+
+    public function getAfter() {
+        return $this->after;
+    }
+
+    /**
+     * Get https.
+     * @return  [type]
+     */
+    public function getHttps() {
+        return $this->https;
     }
 
     /**
