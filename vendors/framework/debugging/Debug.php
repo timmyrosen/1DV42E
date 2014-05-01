@@ -20,7 +20,7 @@ class Debug {
      * @param  Exception $e
      * @return void
      */
-    public static function shout(\Exception $e) {
+    public static function shout($e) {
         $msg = $e->getMessage();
         
         $trace = $e->getTrace()[0];
