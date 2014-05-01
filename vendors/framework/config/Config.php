@@ -2,7 +2,7 @@
 
 require('config.php');
 
-use Framework\Exception\CustomException;
+use \Exception;
 
 class Config {
     private static $config;
@@ -29,17 +29,17 @@ class Config {
      */
     public static function get($config) {
         if (preg_match('/(\w+)\:(\w+)/', $config, $m)) {
-            if (self::$config[$m[1]][$m[2]]) {
+            if (isset(self::$config[$m[1]][$m[2]])) {
                 $return = self::$config[$m[1]][$m[2]];
             }
         } else {
-            if (self::$config[$config]) {
+            if (isset(self::$config[$config])) {
                 $return = self::$config[$config];
             }
         }
 
-        if (!$return) {
-            throw new CustomException("The config ".$config." couldn't be found.");
+        if (!isset($return)) {
+            throw new Exception("The config ".$config." couldn't be found.");
         }
 
         return $return;
