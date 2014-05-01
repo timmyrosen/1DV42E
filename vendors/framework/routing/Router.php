@@ -1,18 +1,22 @@
 <?php namespace Framework\Routing;
 
-use Framework\Exception\CustomException;
+use \Exception;
 use \Closure;
 
 require('Filter.php');
 require('Route.php');
 
 /**
- * @todo  support https, optional variable (:id?)
- * 'SERVER_PROTOCOL' => string 'HTTP/1.1'
- * ->protocol("https")
+ * @todo  optional variable (:id?)
  */
 
 class Router {
+    /**
+     * Stores the instance of the class.
+     * @var  Router
+     */
+    private static $self;
+    
     /**
      * Contains all available routes.
      * @var  array
@@ -25,35 +29,13 @@ class Router {
      */
     private static $filters = array();
 
-    /**
-     * Contains all before filters.
-     * @var  array
-     */
-    private static $befores = array();
+    private static $lock = false;
 
-    /**
-     * Contains all afters filters.
-     * @var  array
-     */
-    private static $afters = array();
+    private static $routeCount = -1;
 
-    /**
-     * Stores the instance of the class.
-     * @var  Router
-     */
-    private static $self;
+    private static $routeListener = array();
 
-    /**
-     * Used to keep track of routes.
-     * @var  integer
-     */
-    private static $currentIndex = 0;
-    
-    /**
-     * Used to keep track of routes.
-     * @var  boolean
-     */
-    private static $indexCount = false;
+    private static $lastMethodCalled;
 
     /**
      * Construct.
@@ -61,8 +43,33 @@ class Router {
      * so it can be accessed and returned by static functions.
      */
     public function __construct() {
-        var_dump($_SERVER);
         self::$self = $this;
+    }
+
+    /*
+      När exempelvis resource körs i en group, så låser den upp,
+      sen låser den igen. Sen körs typ https() och då körs detta.
+      Men då är det ju låst som fan här, därför väljer den bara
+      den sista.
+    */
+    private function getStartRoute() {
+        if (self::$lock) {
+            return Count(self::$routes)-1;
+        }
+        return self::$routeCount;
+    }
+
+    private function getLastRoute() {
+        return Count(self::$routes);
+    }
+
+    private static function turnLockOn() {
+        self::$lock = true;
+        self::$routeCount = Count(self::$routes);
+    }
+
+    private static function turnLockOff() {
+        self::$lock = false;
     }
 
     /**
@@ -71,23 +78,34 @@ class Router {
      * @return  Router
      */
     public function scope($scope) {
-        $self = self::$self;
+        self::$lastMethodCalled = 'scope';
+        $first = $this->getStartRoute();
+        $last = $this->getLastRoute();
 
-        // check if indexCount is set. Then loop through all
-        // routes that have been added and set them to the
-        // new scope. 
-        if ($self::$indexCount) {
-            $length = Count($self::$routes);
-            for ($i=$self::$currentIndex; $i<$length; $i++) {
-                $self::$routes[$i]->setScope($scope);
-            }
-
-            $self::$indexCount = false;
+        for ($i=$first; $i<$last; $i++) {
+            self::$routes[$i]->setScope($scope);
         }
-        // if indexCount is false, then set the new scope to
-        // the last inserted route.
-        else {
-            $self::$routes[Count($self::$routes)-1]->setScope($scope);
+
+        return self::$self;
+    }
+
+    /**
+     * HTTPS method.
+     * @return  Router
+     */
+    public function https() {
+        self::$lastMethodCalled = 'https';
+        //var_dump(self::$routeListener);
+
+        foreach (self::$routeListener as $key) {
+            //echo self::$routes[$key]->getPath().'<br>';
+        }
+
+        $first = $this->getStartRoute();
+        $last = $this->getLastRoute();
+
+        for ($i=$first; $i<$last; $i++) {
+            self::$routes[$i]->setHttps();
         }
 
         return self::$self;
@@ -99,12 +117,6 @@ class Router {
      * @return  Router
      */
     public function before($method) {
-        foreach (self::$filters as $filter) {
-            if ($filter->getName() == $method) {
-                self::$befores[] = $filter;
-            }
-        }
-
         return self::$self;
     }
 
@@ -114,12 +126,6 @@ class Router {
      * @return  Router
      */
     public function after($method) {
-        foreach (self::$filters as $filter) {
-            if ($filter->getName() == $method) {
-                self::$afters[] = $filter;
-            }
-        }
-
         return self::$self;
     }
 
@@ -135,44 +141,13 @@ class Router {
     }
 
     /**
-     * Match method. Lets the user pass an array with
-     * the request methods used to set up a path.
-     * @param   Array           $methods   e.g: array("get", "post")
-     * @param   string          $path
-     * @param   string|Closure  $callback
-     * @return  Router
-     */
-    public static function match(Array $methods, $path, $callback) {
-        foreach ($methods as $method) {
-            self::addRoute($method, $path, $callback);
-        }
-
-        return self::$self;
-    }
-
-    /**
-     * Any method.
-     * @param   string  $path
-     * @param   string|Closure  $callback
-     * @return  void
-     */
-    public static function any($path, $callback) {
-        self::addRoute('GET',       $path,    $callback);
-        self::addRoute('POST',      $path,    $callback);
-        self::addRoute('PUT',       $path,    $callback);
-        self::addRoute('PATCH',     $path,    $callback);
-        self::addRoute('DELETE',    $path,    $callback);
-
-        return self::$self;
-    }
-
-    /**
      * Get method.
      * @param   string          $path
      * @param   string|Closure  $callback
      * @return  Router
      */
     public static function get($path, $callback) {
+        self::$lastMethodCalled = 'get';
         self::addRoute('GET', $path, $callback);
         return self::$self;
     }
@@ -233,16 +208,116 @@ class Router {
     }
 
     /**
+     * Add a route to the routes array.
+     * @param  string          $method
+     * @param  string          $path
+     * @param  string|Closure  $callback
+     */
+    private static function addRoute($method, $path, $callback) {
+        assert(!empty($method), 'Missing method.');
+        assert(!empty($path), 'Missing path.');
+        assert(!empty($callback), 'Missing callback.');
+
+        self::$routes[] = new Route($method, $path, $callback);
+        
+        if (!self::$lock) {
+            self::$routeListener = array();
+            self::$routeCount = Count(self::$routes)-1;
+        }
+        
+        self::$routeListener[] = Count(self::$routes)-1; // get last index
+    }
+
+    /**
+     * Any method.
+     * @param   string  $path
+     * @param   string|Closure  $callback
+     * @return  void
+     */
+    public static function any($path, $callback) {
+        // initiate the local lock
+        $lock = false;
+
+        // if the global class lock is disabled, then turn
+        // on the local lock and turn on the global class
+        // lock. This will prevent the route counter from
+        // increasing.
+        if (!self::$lock) {
+            $lock = true;
+            self::turnLockOn();
+        }
+
+        // set up all routes
+        self::addRoute('GET',       $path,    $callback);
+        self::addRoute('POST',      $path,    $callback);
+        self::addRoute('PUT',       $path,    $callback);
+        self::addRoute('PATCH',     $path,    $callback);
+        self::addRoute('DELETE',    $path,    $callback);
+
+        // if the local lock was turned on, then disable
+        // the global lock again before exiting.
+        if ($lock) {
+            self::turnLockOff();
+        }
+        
+        return self::$self;
+    }
+
+    /**
+     * Match method. Lets the user pass an array with
+     * the request methods used to set up a path.
+     * 
+     * If there's any unclarity regarding the lock events, please
+     * refer to the Router::any() method for a detailed description.
+     * @param   Array           $methods   e.g: array("get", "post")
+     * @param   string          $path
+     * @param   string|Closure  $callback
+     * @return  Router
+     */
+    public static function match(Array $methods, $path, $callback) {
+        $lock = false;
+
+        if (!self::$lock) {
+            $lock = true;
+            self::turnLockOn();
+        }
+
+        foreach ($methods as $method) {
+            self::addRoute($method, $path, $callback);
+        }
+
+        if ($lock) {
+            self::turnLockOff();
+        }
+
+        return self::$self;
+    }
+
+    /**
      * Resource method. The method creates paths inspired
      * by REST, based on the passed path. The callback must
      * be a reference of a controller, as a string.
+     *
+     * If there's any unclarity regarding the lock events, please
+     * refer to the Router::any() method for a detailed description.
      * @param   string  $path
      * @param   string  $callback
      * @return  Router
      */
     public static function resource($path, $callback) {
+        self::$lastMethodCalled = 'resource';
+
         if ($callback instanceof Closure) {
-            throw new CustomException("Your resource callback must be a string. Please type a controller.");
+            throw new Exception("Your resource callback must be a string. Please type a controller.");
+        }
+
+        $lock = false;
+
+        self::$routeListener = array();
+
+        if (!self::$lock) {
+            $lock = true;
+            self::turnLockOn();
         }
 
         // set up the resource in a RESTful way based on the path.
@@ -255,35 +330,39 @@ class Router {
         self::addRoute('PATCH',     $path,              $callback.':update');
         self::addRoute('DELETE',    $path,              $callback.':destroy');
 
+        if ($lock) {
+            self::turnLockOff();
+        }
+
         return self::$self;
     }
 
     /**
      * Group method.
+     *
+     * If there's any unclarity regarding the lock events, please
+     * refer to the Router::any() method for a detailed description.
      * @param   Closure  $callback
      * @return  Router
      */
     public static function group($callback) {
-        self::$indexCount = true;
-        self::$currentIndex = Count(self::$routes);
+        self::$lastMethodCalled = 'group';
+        $lock = false;
+
+        self::$routeListener = array();
+
+        if (!self::$lock) {
+            $lock = true;
+            self::turnLockOn();
+        }
 
         call_user_func($callback, array());
-        
+
+        if ($lock) {
+            self::turnLockOff();
+        }
+
         return self::$self;
-    }
-
-    /**
-     * Add a route to the routes array.
-     * @param  string          $method
-     * @param  string          $path
-     * @param  string|Closure  $callback
-     */
-    private static function addRoute($method, $path, $callback) {
-        assert(!empty($method), 'Missing method.');
-        assert(!empty($path), 'Missing path.');
-        assert(!empty($callback), 'Missing callback.');
-
-        self::$routes[] = new Route($method, $path, $callback);
     }
 
     /**
@@ -317,6 +396,7 @@ class Router {
         $return .= '<th>Scope</th>';
         $return .= '<th>Path</th>';
         $return .= '<th>Callback</th>';
+        $return .= '<th>https</th>';
         $return .= '</tr>';
 
         foreach (self::$routes as $route) {
@@ -325,6 +405,7 @@ class Router {
             $return .= '<td>'.$route->getScope().'</td>';
             $return .= '<td>'.$route->getPath().'</td>';
             $return .= '<td>'.$route->getCallbackToString().'</td>';
+            $return .= '<td>'.$route->getHttps().'</td>';
             $return .= '</tr>';
         }
 
@@ -347,7 +428,7 @@ class Router {
         foreach (self::$routes as $route) {
             if ($route->matchPath($uri, $method)) {
                 if ($route->getCallback() instanceof Closure) {
-                    call_user_func($route->getCallback(), $route->getParams());
+                    $callback = $route->getCallback();
 
                     $pathFound = true;
                 } else {
@@ -360,20 +441,26 @@ class Router {
                         $controller = $route->getScope().'\\'.$controller;
                     }
 
-                    // run all befores
-                    foreach (self::$befores as $before) {
-                        call_user_func($before->getCallback(), array());
-                    }
-
-                    call_user_func(array(new $controller, $function), $route->getParams());
-
-                    // run all afters
-                    foreach (self::$afters as $after) {
-                        call_user_func($after->getCallback(), array());
-                    }
+                    $callback = array(new $controller, $function);
 
                     $pathFound = true;
                 }
+
+                /*
+                return self::$self;
+                if (!(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on')) {
+                    //throw new Exception("This page can't be reached without https protocol.");
+                }
+                return self::$self;
+                */
+               
+                // run all befores
+                $route->getBefore();
+
+                call_user_func($callback, $route->getParams());
+
+                // run all afters
+                $route->getAfter();
             }
         }
 
