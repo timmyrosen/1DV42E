@@ -1,5 +1,5 @@
 <?php
-require('../../vendors/testing/SpeedTest.php');
+require('../../vendors/framework/testing/SpeedTest.php');
 
 use Framework\Testing\SpeedTest;
 
@@ -71,6 +71,32 @@ $result = $speedTest->run(function() {
     for ($i=0; $i<100000; $i++) {
         $array = array('Hejsan', 'Hoppsan', 'Tjena', 'Tja');
         array_shift($array);
+    }
+});
+
+echo 'Resultat: '.substr($result, 0, 10);
+
+/**
+ * rtrim()
+ */
+echo '<h1>rtrim()</h1>';
+$result = $speedTest->run(function() {
+    for ($i=0; $i<500000; $i++) {
+        $string = 'Hejsan hoppsan, ';
+        rtrim($string, ', ');
+    }
+});
+
+echo 'Resultat: '.substr($result, 0, 10);
+
+/**
+ * trim()
+ */
+echo '<h1>trim()</h1>';
+$result = $speedTest->run(function() {
+    for ($i=0; $i<500000; $i++) {
+        $string = 'Hejsan hoppsan, ';
+        trim($string, ', ');
     }
 });
 
