@@ -1,4 +1,4 @@
-<?php namespace Framwork\Testing;
+<?php namespace Framework\Testing;
 
 use \Exception;
 use \Closure;
