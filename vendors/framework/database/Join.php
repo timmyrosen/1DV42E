@@ -28,20 +28,20 @@ class Join {
 
     private function setType($type) {
         switch ($type) {
-            case Join::JOIN:
-                $this->type = Join::JOIN;
+            case self::JOIN:
+                $this->type = self::JOIN;
                 break;
-            case Join::INNERJOIN:
-                $this->type = Join::INNERJOIN;
+            case self::INNERJOIN:
+                $this->type = self::INNERJOIN;
                 break;
-            case Join::OUTERJOIN:
-                $this->type = Join::OUTERJOIN;
+            case self::OUTERJOIN:
+                $this->type = self::OUTERJOIN;
                 break;
-            case Join::LEFTJOIN:
-                $this->type = Join::LEFTJOIN;
+            case self::LEFTJOIN:
+                $this->type = self::LEFTJOIN;
                 break;
-            case Join::RIGHTJOIN:
-                $this->type = Join::RIGHTJOIN;
+            case self::RIGHTJOIN:
+                $this->type = self::RIGHTJOIN;
                 break;
             default:
                 throw new Exception('No valid type.');

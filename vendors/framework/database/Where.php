@@ -51,11 +51,11 @@ class Where {
 
     public function setOperator($operator) {
         switch ($operator) {
-            case Where::AND_OPERATOR:
-                $this->operator = Where::AND_OPERATOR;
+            case self::AND_OPERATOR:
+                $this->operator = self::AND_OPERATOR;
                 break;
-            case Where::OR_OPERATOR:
-                $this->operator = Where::OR_OPERATOR;
+            case self::OR_OPERATOR:
+                $this->operator = self::OR_OPERATOR;
                 break;
             default:
                 throw new Exception('No valid operator.');
