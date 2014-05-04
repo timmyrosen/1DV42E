@@ -1,13 +1,14 @@
 <?php
-/* Application */
 try {
+    session_start();
+
     /* libs */
     require('vendors/framework/config/Config.php');
     require('vendors/framework/logging/Log.php');
     require('vendors/framework/debugging/Debug.php');
-    require('vendors/framework/exception/CustomException.php');
     require('vendors/framework/routing/Router.php');
     require('vendors/framework/database/Database.php');
+    require('vendors/framework/session/Session.php');
 
     /* controllers */
     require('app/controllers/UsersController.php');
