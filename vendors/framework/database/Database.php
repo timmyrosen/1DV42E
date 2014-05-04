@@ -10,30 +10,74 @@ require('Where.php');
 require('OrderBy.php');
 
 class Database {
+    /**
+     * Stores the instance of the class.
+     * @var  Database
+     */
     private static $self;
 
+    /**
+     * Stores the PDO connection.
+     * @var  PDO object
+     */
     private $connection;
 
+    /**
+     * Stores all tables.
+     * @var  array
+     */
     private $selects = array();
 
+    /**
+     * Stores all tables.
+     * @var  array
+     */
     private static $tables = array();
 
+    /**
+     * Stores all joins.
+     * @var  array
+     */
     private $joins = array();
 
+    /**
+     * Stores all ons.
+     * @var  array
+     */
     private $ons = array();
 
+    /**
+     * Stores all wheres.
+     * @var  array
+     */
     private $wheres = array();
 
+    /**
+     * Stores all order bys.
+     * @var  array
+     */
     private $orderBys = array();
 
-    private $limits = '';
+    /**
+     * Stores the limit value.
+     * @var  int
+     */
+    private $limits = 0;
 
+    /**
+     * Stores the offset value.
+     * @var  int
+     */
     private $offsets = '';
-
-    private $query = '';
 
     private $preparedStatements = array();
 
+    /**
+     * Construct. Stores an instance of itself so static
+     * methods can use it.
+     *
+     * Also fetches configs and creates a new PDO connection.
+     */
     public function __construct() {
         self::$self = $this;
 
@@ -48,19 +92,12 @@ class Database {
         $this->connection = new PDO($dsn, $user, $password);
     }
 
-    private function build() {
-
-    }
-
-    private function getObjectsAsString($objects) {
-        $string = '';
-        foreach ($objects as $object) {
-            $string .= $object.', ';
-        }
-
-        return trim($string, ', ');
-    }
-
+    /**
+     * Add one or multiple tables (separated by comma (,))
+     * do the tables array.
+     * @param   string  $tables
+     * @return  Database
+     */
     public static function table($tables) {
         $tables = explode(",", $tables);
 
@@ -71,8 +108,18 @@ class Database {
         return self::$self;
     }
 
+    /**
+     * Return all tables as a string, separated by comma (,)´.
+     * @return  string
+     */
     private function getTables() {
-        return $this->getObjectsAsString(self::$tables);
+        $string = '';
+
+        foreach (self::$tables as $table) {
+            $string .= $object.', ';
+        }
+
+        return trim($string, ', ');
     }
 
     public function join($table) {
@@ -212,14 +259,16 @@ class Database {
         return '';
     }
 
-    public function first() {
-
-    }
-
     public static function raw($query) {
 
     }
 
+    /**
+     * Get param type checks a values type and
+     * returns a PDO type.
+     * @param   mixed  $value
+     * @return  int|bool|null|string
+     */
     public function getParamType($value) {
         switch (true) {
             case is_int($value):
@@ -284,10 +333,6 @@ class Database {
         return $statement->execute();
     }
 
-    private function build() {
-        
-    }
-
     public function get() {
         // Select {selects} From {tables} {joins} {wheres} {orderbys} {limit}
         $args = array(
@@ -296,10 +341,11 @@ class Database {
             $this->getJoins(),
             $this->getWheres(),
             $this->getOrderBys(),
-            $this->getLimits()
+            $this->getLimits(),
+            $this->getOffsets()
         );
 
-        $query = 'Select %s From %s %s %s %s %s';
+        $query = 'Select %s From %s %s %s %s %s %s';
 
         $query = preg_replace('/\s+/', ' ', trim(vsprintf($query, $args)));
 
@@ -308,6 +354,10 @@ class Database {
         $statement->execute();
         var_dump($statement);
         var_dump($statement->fetchAll());
+    }
+
+    public function first() {
+
     }
 
     public function execute() {
