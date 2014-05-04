@@ -1,0 +1,3 @@
+[submodule "Coding Standards"]
+	path = coding_standards
+	url = git@github.com:RBertram/coding_standards.git
