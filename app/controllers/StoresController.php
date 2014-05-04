@@ -4,6 +4,7 @@ use Framework\Database\Database;
 
 class StoresController {
     public function index() {
+        /*
         $inserts = array(
             'Name' => 'Mansnästet',
             'Description' => 'Mansnästet är det bästa hänget.'
@@ -13,9 +14,17 @@ class StoresController {
 
         $keys = array('Name', 'Description');
         $values = array('Mansnästet', 'Mansnästet är bästa hänget.');
-        Database::table("Stores")->insert($keys, $values);
+        */
+       
+        //Database::table("Stores")->insert($keys, $values);
 
-        //Database::table("Stores")->select("*")->get();
+        $objects = Database::table("Stores")
+        ->select("*")
+        ->offset(1)
+        ->limit(2)
+        ->get();
+
+        var_dump($objects);
     }
 
     public function show($id) {

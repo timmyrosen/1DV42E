@@ -116,7 +116,7 @@ class Database {
         $string = '';
 
         foreach (self::$tables as $table) {
-            $string .= $object.', ';
+            $string .= $table.', ';
         }
 
         return trim($string, ', ');
@@ -171,11 +171,18 @@ class Database {
     }
 
     private function getSelects() {
+
         if (empty($this->selects)) {
             return '*';
         }
 
-        return $this->getObjectsAsString($this->selects);
+        $string = '';
+
+        foreach ($this->selects as $select) {
+            $string .= $select.', ';
+        }
+
+        return trim($string, ', ');
     }
 
     public function where($column, $compareOperator, $value) {
@@ -349,11 +356,11 @@ class Database {
 
         $query = preg_replace('/\s+/', ' ', trim(vsprintf($query, $args)));
 
-        $statement = $this->connection->prepare($query);
+        $this->statement = $this->connection->prepare($query);
 
-        $statement->execute();
-        var_dump($statement);
-        var_dump($statement->fetchAll());
+        $this->statement->execute();
+
+        return $this->statement->fetchAll();
     }
 
     public function first() {

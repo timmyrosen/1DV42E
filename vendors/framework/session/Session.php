@@ -1,6 +1,6 @@
 <?php namespace Framework\Session;
 
-\Exception;
+use \Exception;
 
 class Session {
     /**
