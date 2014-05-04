@@ -7,6 +7,7 @@ use Framework\Config\Config;
 
 require('Join.php');
 require('Where.php');
+require('OrderBy.php');
 
 class Database {
     private static $self;
@@ -20,6 +21,14 @@ class Database {
     private $joins = array();
 
     private $ons = array();
+
+    private $wheres = array();
+
+    private $orderBys = array();
+
+    private $limits = '';
+
+    private $offsets = '';
 
     private $query = '';
 
@@ -109,10 +118,6 @@ class Database {
         return trim($string);
     }
 
-    public static function raw($query) {
-
-    }
-
     public function select($column) {
         $this->selects[] = $column;
         return self::$self;
@@ -155,10 +160,63 @@ class Database {
             $string .= $where->getValue().' ';
         }
 
-        return trim('Where '.$string);
+        if ($string) {
+            return trim('Where '.$string);
+        }
+
+        return '';
+    }
+
+    public function orderBy($column, $order) {
+        $this->orderBys[] = new OrderBy($column, $order);
+        return self::$self;
+    }
+
+    private function getOrderBys() {
+        $string = '';
+
+        foreach ($this->orderBys as $orderBy) {
+            $string .= $orderBy->getColumn().' '.$orderBy->getOrder().', ';
+        }
+
+        if ($string) {
+            return trim('Order by '.$string, ', ');
+        }
+
+        return '';
+    }
+
+    public function limit($limit) {
+        $this->limits = $limit;
+        return self::$self;
+    }
+
+    private function getLimits() {
+        if ($this->limits) {
+            return 'Limit '.$this->limits;
+        }
+
+        return '';
+    }
+
+    public function offset($offset) {
+        $this->offsets = $offset;
+        return self::$self;
+    }
+
+    private function getOffsets() {
+        if ($this->offsets) {
+            return 'Offset '.$this->offsets;
+        }
+
+        return '';
     }
 
     public function first() {
+
+    }
+
+    public static function raw($query) {
 
     }
 
@@ -226,24 +284,30 @@ class Database {
         return $statement->execute();
     }
 
+    private function build() {
+        
+    }
+
     public function get() {
         // Select {selects} From {tables} {joins} {wheres} {orderbys} {limit}
         $args = array(
             $this->getSelects(),
             $this->getTables(),
             $this->getJoins(),
-            $this->getWheres()
+            $this->getWheres(),
+            $this->getOrderBys(),
+            $this->getLimits()
         );
 
-        $query = 'Select %s From %s %s %s';
+        $query = 'Select %s From %s %s %s %s %s';
 
-        $query = trim(vsprintf($query, $args));
+        $query = preg_replace('/\s+/', ' ', trim(vsprintf($query, $args)));
 
         $statement = $this->connection->prepare($query);
 
         $statement->execute();
         var_dump($statement);
-        var_dump($statement->fetchAll());        
+        var_dump($statement->fetchAll());
     }
 
     public function execute() {
@@ -254,16 +318,6 @@ class Database {
 
     public function sanitize($query) {
         return mysql_real_escape_string($query);
-    }
-
-    private function placeholders($count) {
-        $string = '';
-
-        for ($i=0; $i<$count; $i++) {
-            $string .= '?, ';
-        }
-
-        return trim($string, ', ');
     }
 }
 
