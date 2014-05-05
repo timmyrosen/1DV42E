@@ -11,7 +11,7 @@ class Session {
      */
     public static function put($key, $value) {
         assert(is_string($key), 'Key must be a string.');
-        assert(is_null($value), 'A value can\'t be null.');
+        assert(!is_null($value), 'A value can\'t be null.');
         $_SESSION[$key] = $value;
     }
 
@@ -22,7 +22,7 @@ class Session {
      * @throws  Exception
      */
     public static function get($key) {
-        if (!self::$has($key)) {
+        if (!self::has($key)) {
             throw new Exception('The session key don\'t exist.');
         }
 
