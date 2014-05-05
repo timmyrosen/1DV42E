@@ -35,7 +35,7 @@ class Session {
      * @throws  Exception
      */
     public static function destroy($key) {
-        if (!self::$has($key)) {
+        if (!self::has($key)) {
             throw new Exception('The session key don\'t exist.');
         }
 
