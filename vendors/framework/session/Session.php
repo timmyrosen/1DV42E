@@ -9,9 +9,11 @@ class Session {
      * @param   mixed  $value
      * @return  void
      */
+    
     public static function put($key, $value) {
         assert(is_string($key), 'Key must be a string.');
         assert(!is_null($value), 'A value can\'t be null.');
+        
         $_SESSION[$key] = $value;
     }
 
