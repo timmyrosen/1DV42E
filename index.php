@@ -9,6 +9,7 @@ try {
     require('vendors/framework/routing/Router.php');
     require('vendors/framework/database/Database.php');
     require('vendors/framework/session/Session.php');
+    require('vendors/framework/cookie/Cookie.php');
 
     /* controllers */
     require('app/controllers/UsersController.php');
