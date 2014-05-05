@@ -10,6 +10,9 @@ require('Where.php');
 require('OrderBy.php');
 
 class Database {
+    const ARRAYS = PDO::FETCH_ASSOC;
+    const OBJECTS = PDO::FETCH_OBJ;
+
     /**
      * Stores the instance of the class.
      * @var  Database
@@ -69,6 +72,8 @@ class Database {
      * @var  int
      */
     private $offsets = '';
+
+    private static $preparedStatement;
 
     private $preparedStatements = array();
 
@@ -329,18 +334,30 @@ class Database {
 
         $query = 'Insert Into '.self::$tables.' ('.$c.') Values ('.$v.');';
 
-        $statement = $this->connection->prepare($query);
+        self::$preparedStatement = $this->connection->prepare($query);
 
         $i = 0;
         foreach ($keys as $key => $value) {
             $i++;
-            $statement->bindValue($i, $value, $this->getParamType($value));
+            self::$preparedStatement->bindValue($i, $value, $this->getParamType($value));
         }
 
-        return $statement->execute();
+        return self::$preparedStatement->execute();
     }
 
-    public function get() {
+    public function get($mode=self::OBJECTS) {
+        $this->prepare();
+        self::$preparedStatement->execute();
+        return self::$preparedStatement->fetchAll($mode);
+    }
+
+    public function first($mode=self::OBJECTS) {
+        $this->prepare();
+        self::$preparedStatement->execute();
+        return self::$preparedStatement->fetch($mode);
+    }
+
+    public function prepare() {
         // Select {selects} From {tables} {joins} {wheres} {orderbys} {limit}
         $args = array(
             $this->getSelects(),
@@ -356,25 +373,12 @@ class Database {
 
         $query = preg_replace('/\s+/', ' ', trim(vsprintf($query, $args)));
 
-        $this->statement = $this->connection->prepare($query);
-
-        $this->statement->execute();
-
-        return $this->statement->fetchAll();
+        self::$preparedStatement = $this->connection->prepare($query);
     }
 
-    public function first() {
-
-    }
-
-    public function execute() {
-        foreach ($this->preparedStatements as $statement) {
-            $statement->execute();
-        }
-    }
-
-    public function sanitize($query) {
-        return mysql_real_escape_string($query);
+    public static function execute() {
+        self::$preparedStatement->execute();
+        return self::$self;
     }
 }
 
