@@ -2,6 +2,7 @@
 
 $config = [
     'path' => '/1DV42E',
+    'host' => 'localhost',
     'logs' => [
         'error' => 'logs/error.log'
     ],
