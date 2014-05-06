@@ -471,9 +471,3 @@ class Router {
         }
     }
 }
-
-/**
- * Let Router initiate itself.
- * @todo  maybe move this to a global "run" file.
- */
-new Router();
