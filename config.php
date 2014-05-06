@@ -15,8 +15,9 @@ $config = [
         'charset' => 'utf8'
     ],
     'autoloading' => [
-        'path'      => 'autoloader.cache',
-        'resources' => ['app'],
-        'excludes'  => ['']
+        'cacheFiles'    => true,
+        'path'          => 'autoloader.cache',
+        'resources'     => ['app/'],
+        'excludes'      => ['']
     ]
 ];
