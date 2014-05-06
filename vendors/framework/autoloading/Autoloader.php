@@ -33,21 +33,39 @@ class Autoloader {
      *
      * Try to load all files and include them in the
      * project.
-     * @param  string  $path
-     * @param  array   $resources
-     * @param  array   $excludes
+     * @param  string   $path
+     * @param  array    $resources
+     * @param  array    $excludes
+     * @param  boolean  $cacheFiles
      */
-    public function __construct($path, $resources, $excludes=array()) {
+    public function __construct($path, $resources, $excludes=array(), $cacheFiles=true) {
         $this->path = $path;
         $this->resources = $resources;
         $this->excludes = $excludes;
 
-        if (!$this->fileExists()) {
-            $this->createCacheFile();
-            $this->scanAndCacheFiles();
+        // if the user wishes not to load from cache,
+        // then scan and execute all files.
+        if (!$cacheFiles) {
+            $files = $this->scanFiles();
+            $this->executeFiles($files);
+            return true;
         }
 
-        $this->loadCache();
+        // if the file exists, then load all files
+        // and execute them. If not, create the cache
+        // file, scan for all files, execute and then
+        // save to cache.
+        if ($this->fileExists()) {
+            $files = $this->loadFiles();
+            $this->executeFiles($files);
+            return true;
+        } else {
+            $this->createCacheFile();
+            $files = $this->scanFiles();
+            $this->executeFiles($files);
+            $this->saveCache($files);
+            return true;
+        }
     }
 
     /**
@@ -55,35 +73,59 @@ class Autoloader {
      * found files.
      * @return  void
      */
-    private function scanAndCacheFiles() {
+    private function scanFiles() {
         foreach ($this->resources as $object) {
             $directory = new RecursiveDirectoryIterator($object);
             $iterator = new RecursiveIteratorIterator($directory);
-            $object = new RegexIterator($iterator, '/^.+\.php$/i', RecursiveRegexIterator::GET_MATCH);
+            $objects = new RegexIterator($iterator, '/^.+\.php$/i', RecursiveRegexIterator::GET_MATCH);
 
-            $tmp = '';
-            foreach ($object as $object) {
+            $files = array();
+            foreach ($objects as $object) {
                 $object = str_replace('\\', '/', $object[0]);
                 if (!in_array($object, $this->excludes)) {
-                    $tmp .= $object."\n";
+                    $files[] = $object;
                 }
             }
 
-            file_put_contents($this->path, $tmp);
+            return $files;
         }
     }
 
     /**
-     * Load all cached files and include (by require) them.
+     * Save files to cache.
+     * @param   array  $files
      * @return  void
      */
-    private function loadCache() {
-        $data = file_get_contents($this->path);
-        $objects = explode("\n", $data);
+    private function saveCache($files) {
+        $tmp = '';
 
-        foreach ($objects as $object) {
-            if (!empty($object)) {
-                require($object);   
+        foreach ($files as $file) {
+            $tmp .= $file."\n";
+        }
+
+        file_put_contents($this->path, $tmp);
+    }
+
+    /**
+     * Load all cached files.
+     * @return  array
+     */
+    private function loadFiles() {
+        $data = file_get_contents($this->path);
+        $files = explode("\n", $data);
+
+        return $files;
+    }
+
+    /**
+     * Execute all files.
+     * @param   array  $files
+     * @return  void
+     */
+    private function executeFiles($files) {
+        foreach ($files as $file) {
+            if (!empty($file)) {
+                require($file);   
             }
         }
     }
