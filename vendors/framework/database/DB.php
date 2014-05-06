@@ -9,7 +9,7 @@ require('Join.php');
 require('Where.php');
 require('OrderBy.php');
 
-class Database {
+class DB {
     const ARRAYS = PDO::FETCH_ASSOC;
     const OBJECTS = PDO::FETCH_OBJ;
 
@@ -381,8 +381,3 @@ class Database {
         return self::$self;
     }
 }
-
-/**
- * Let Database initiate itself.
- */
-new Database();
