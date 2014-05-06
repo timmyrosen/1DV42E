@@ -23,5 +23,6 @@ new Database\DB(
 
 new Autoloading\Autoloader(
     Config::get('autoloading:path'),
-    Config::get('autoloading:resources')
+    Config::get('autoloading:resources'),
+    Config::get('autoloading:excludes')
 );
