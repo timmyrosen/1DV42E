@@ -15,5 +15,3 @@ Router::group(function() {
 
     Router::resource("users", "UsersController");
 })->scope("admin");
-
-Router::run();
