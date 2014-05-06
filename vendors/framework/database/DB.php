@@ -3,7 +3,6 @@
 use \Exception;
 use \PDO;
 use \PDOException;
-use Framework\Config\Config;
 
 require('Join.php');
 require('Where.php');
@@ -82,15 +81,14 @@ class DB {
      * methods can use it.
      *
      * Also fetches configs and creates a new PDO connection.
+     * @param  string  $driver
+     * @param  string  $host
+     * @param  string  $database
+     * @param  string  $user
+     * @param  string  $password
      */
-    public function __construct() {
+    public function __construct($driver, $host, $database, $user, $password) {
         self::$self = $this;
-
-        $driver = Config::get("database:driver");
-        $host = Config::get("database:host");
-        $database = Config::get("database:db");
-        $user = Config::get("database:user");
-        $password = Config::get("database:pass");
 
         $dsn = $driver.':dbname='.$database.';host='.$host;
 
