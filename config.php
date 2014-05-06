@@ -17,6 +17,6 @@ $config = [
     'autoloading' => [
         'path'      => 'autoloader.cache',
         'resources' => ['app'],
-        'exclude'   => ['']
+        'excludes'  => ['']
     ]
 ];
