@@ -19,6 +19,12 @@ class Autoloader {
     private $resources;
 
     /**
+     * Stores all excluded files.
+     * @var  array
+     */
+    private $excludes;
+
+    /**
      * Construct.
      * 
      * Check if a cache file already exists. If
@@ -27,10 +33,14 @@ class Autoloader {
      *
      * Try to load all files and include them in the
      * project.
+     * @param  string  $path
+     * @param  array   $resources
+     * @param  array   $excludes
      */
-    public function __construct($path, $resources) {
+    public function __construct($path, $resources, $excludes=array()) {
         $this->path = $path;
         $this->resources = $resources;
+        $this->excludes = $excludes;
 
         if (!$this->fileExists()) {
             $this->createCacheFile();
@@ -53,7 +63,10 @@ class Autoloader {
 
             $tmp = '';
             foreach ($object as $object) {
-                $tmp .= $object[0]."\n";
+                $object = str_replace('\\', '/', $object[0]);
+                if (!in_array($object, $this->excludes)) {
+                    $tmp .= $object."\n";
+                }
             }
 
             file_put_contents($this->path, $tmp);
@@ -70,7 +83,7 @@ class Autoloader {
 
         foreach ($objects as $object) {
             if (!empty($object)) {
-                require($object);
+                require($object);   
             }
         }
     }
