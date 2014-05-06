@@ -13,5 +13,10 @@ $config = [
         'db'      => 'rabattrea',
         'driver'  => 'mysql',
         'charset' => 'utf8'
+    ],
+    'autoloading' => [
+        'path'      => 'autoloader.cache',
+        'resources' => ['app'],
+        'exclude'   => ['']
     ]
 ];
