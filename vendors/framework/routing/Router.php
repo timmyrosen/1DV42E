@@ -2,6 +2,7 @@
 
 use \Exception;
 use \Closure;
+use Framework\View\View;
 
 require('Filter.php');
 require('Route.php');
@@ -466,10 +467,8 @@ class Router {
             }
         }
 
-        // if there was no match
-        // @todo  use a global error logging class
         if (!$pathFound) {
-            echo '<h1>404, path not found.</h1>';
+            return View::abort(404, 'Path was not found.');
         }
     }
 }
