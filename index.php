@@ -12,7 +12,7 @@ try {
     assert_options(ASSERT_QUIET_EVAL, 1);
     assert_options(ASSERT_CALLBACK, '\Framework\Debugging\Debug::assertCallback');
 
-    Router::run();
+    echo Router::run();
 } catch (Exception $ex) {
     \Framework\Debugging\Debug::Shout($ex);
 }

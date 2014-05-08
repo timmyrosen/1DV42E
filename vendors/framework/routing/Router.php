@@ -457,10 +457,12 @@ class Router {
                 // run all befores
                 $route->getBefore();
 
-                call_user_func($callback, $route->getParams());
+                $response = call_user_func($callback, $route->getParams());
 
                 // run all afters
                 $route->getAfter();
+
+                return $response;
             }
         }
 
