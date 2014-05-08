@@ -1,6 +1,6 @@
 <?php
-
-use Framework\Database\Database;
+use Framework\Database\DB;
+use Framework\View\View;
 
 class StoresController {
     public function index() {
@@ -9,22 +9,24 @@ class StoresController {
             'Name' => 'Mansnästet',
             'Description' => 'Mansnästet är det bästa hänget.'
         );
-        Database::table("Stores")->insert($inserts);
+        DB::table("Stores")->insert($inserts);
 
 
         $keys = array('Name', 'Description');
         $values = array('Mansnästet', 'Mansnästet är bästa hänget.');
         */
        
-        //Database::table("Stores")->insert($keys, $values);
+        //DB::table("Stores")->insert($keys, $values);
 
-        $objects = Database::table("Stores")
+        $objects = DB::table("Stores")
         ->select("*")
         ->offset(1)
         ->limit(2)
         ->get();
 
-        var_dump($objects);
+        $objects = DB::execute()->get();
+
+        return View::json($objects);
     }
 
     public function show($id) {
