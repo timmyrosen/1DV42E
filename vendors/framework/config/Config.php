@@ -45,9 +45,3 @@ class Config {
         return $return;
     }
 }
-
-/**
- * Let Config initiate itself.
- * @todo  maybe move this to a global "run" file.
- */
-new Config();
