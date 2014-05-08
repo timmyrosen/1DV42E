@@ -31,9 +31,18 @@ class View {
      * @todo    Build or include a template engine.
      */
     public static function render($page, $options=array()) {
-        require(self::$viewPath.'/'.$page.'.html');
-        //$response = file_get_contents(self::$viewPath.'/'.$page.'.html');
-        //return $response;
+        $response = file_get_contents(self::$viewPath.'/'.$page.'.html');
+
+        if (preg_match('/\{{\s?@extends\s?=\s?\'(.+)\'\s?}}/', $response, $matches)) {
+            $partial = $response;
+            $extends = array_shift($matches);
+            $partial = str_replace($extends, '', $partial);
+
+            $master = file_get_contents(self::$viewPath.'/'.$matches[0].'.html');
+            $response = preg_replace('/\{{\s?@content\s?}}/', $partial, $master);
+        }
+
+        return $response;
     }
 
     /**
