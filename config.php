@@ -1,8 +1,9 @@
 <?php
 
 $config = [
-    'path' => '/1DV42E',
-    'host' => 'localhost',
+    'host'      => 'localhost',
+    'path'      => '/1DV42E',
+    'views'     => 'app/views',
     'logs' => [
         'error' => 'logs/error.log'
     ],
