@@ -1,3 +1,22 @@
-<h1>Master</h1>
+<html lang="en">
+  <head>
+    <title>Ladidaj daj</title>
+    <meta charset="utf-8">
+  </head>
+  <body>
 
-{{ @content }}
+    @include('client/top')
+
+    <div class="nav">
+      <ul>
+        @render('navigation')
+      </ul>
+    </div>
+
+    <div class="content">
+      @render('content')
+    </div>
+
+    @include('client/footer')
+  </body>
+</html>
