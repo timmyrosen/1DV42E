@@ -1,4 +1,4 @@
-<?php namespace Framework\Testing;
+<?php namespace Webbins\Testing;
 
 class Unit {
     private $method;

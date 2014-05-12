@@ -1,7 +1,7 @@
-<?php namespace Framework\Logging;
+<?php namespace Webbins\Logging;
 
-use Framework\Exception\CustomException;
-use Framework\Config\Config;
+use \Exception;
+use Webbins\Config\Config;
 
 class Log {
     /**
@@ -16,7 +16,7 @@ class Log {
             fwrite($f, $msg."\r\n");
             fclose($f);
         } else {
-            throw new CustomException("Couldn't write to the log file. Do you have permissions?");
+            throw new Exception("Couldn't write to the log file. Do you have permissions?");
         }
     }
 }

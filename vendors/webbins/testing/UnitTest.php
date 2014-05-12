@@ -1,4 +1,4 @@
-<?php namespace Framework\Testing;
+<?php namespace Webbins\Testing;
 
 require('Unit.php');
 

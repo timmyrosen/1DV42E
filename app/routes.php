@@ -1,5 +1,5 @@
 <?php
-use Framework\Routing\Router;
+use Webbins\Routing\Router;
 
 Router::get("/", "HomeController:index");
 

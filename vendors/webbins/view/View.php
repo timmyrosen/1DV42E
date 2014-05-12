@@ -1,4 +1,4 @@
-<?php namespace Framework\View;
+<?php namespace Webbins\View;
 
 // @todo  refactor this code, maybe create a separate template class
 

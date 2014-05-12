@@ -1,4 +1,4 @@
-<?php namespace Framework\Config;
+<?php namespace Webbins\Config;
 
 require('config.php');
 

@@ -1,4 +1,4 @@
-<?php namespace Framework\Testing;
+<?php namespace Webbins\Testing;
 
 use \Exception;
 use \Closure;

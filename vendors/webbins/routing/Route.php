@@ -1,4 +1,4 @@
-<?php namespace Framework\Routing;
+<?php namespace Webbins\Routing;
 
 use \Exception;
 use \Closure;

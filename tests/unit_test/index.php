@@ -2,7 +2,7 @@
 
 /* Config */
 require('../../config.php');
-require('../../vendors/framework/testing/UnitTest.php');
+require('../../vendors/webbins/testing/UnitTest.php');
 
 /* Tests */
 require('RouterTest.php');

@@ -1,4 +1,4 @@
-<?php namespace Framework\Autoloading;
+<?php namespace Webbins\Autoloading;
 
 use \RecursiveDirectoryIterator;
 use \RecursiveIteratorIterator;

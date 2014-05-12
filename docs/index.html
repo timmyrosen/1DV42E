@@ -11,7 +11,7 @@
   <p>Routing is a lovely thingy.</p>
   <h3>The basics</h3>
 
-  <code>
+  <pre>
     Router::get("/", function() {
       echo "Hello world!";
     }
@@ -43,5 +43,5 @@
     })->scope("MyApp");
 
     Router::get("/members", "MembersController:index")->before("authenticate");
-  </code>
+  </pre>>
 </div>

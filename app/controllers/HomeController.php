@@ -1,6 +1,6 @@
 <?php
-use Framework\Routing\Router;
-use Framework\View\View;
+use Webbins\Routing\Router;
+use Webbins\View\View;
 
 class HomeController {
     public function index() {

@@ -1,7 +1,7 @@
 <?php
-require('../../vendors/framework/testing/SpeedTest.php');
+require('../../vendors/webbins/testing/SpeedTest.php');
 
-use Framework\Testing\SpeedTest;
+use Webbins\Testing\SpeedTest;
 
 $speedTest = new SpeedTest();
 

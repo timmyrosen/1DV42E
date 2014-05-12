@@ -1,9 +1,9 @@
 <?php
 
-require('../../vendors/framework/routing/Router.php');
+require('../../vendors/webbins/routing/Router.php');
 
-use Framework\Testing\UnitTest;
-use Framework\Routing\Router;
+use Webbins\Testing\UnitTest;
+use Webbins\Routing\Router;
 
 class RouterTest {
     public function __construct() {

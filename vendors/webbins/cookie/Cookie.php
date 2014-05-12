@@ -1,7 +1,7 @@
-<?php namespace Framework\Cookie;
+<?php namespace Webbins\Cookie;
 
 use \Exception;
-use Framework\Config\Config;
+use Webbins\Config\Config;
 
 class Cookie {
     /**

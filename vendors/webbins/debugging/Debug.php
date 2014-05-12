@@ -1,6 +1,6 @@
-<?php namespace Framework\Debugging;
+<?php namespace Webbins\Debugging;
 
-use Framework\Logging\Log;
+use Webbins\Logging\Log;
 
 class Debug {
     /**

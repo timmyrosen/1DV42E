@@ -1,8 +1,8 @@
-<?php namespace Framework\Routing;
+<?php namespace Webbins\Routing;
 
 use \Exception;
 use \Closure;
-use Framework\View\View;
+use Webbins\View\View;
 
 require('Filter.php');
 require('Route.php');

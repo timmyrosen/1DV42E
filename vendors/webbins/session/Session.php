@@ -1,4 +1,4 @@
-<?php namespace Framework\Session;
+<?php namespace Webbins\Session;
 
 use \Exception;
 

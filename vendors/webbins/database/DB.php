@@ -1,4 +1,4 @@
-<?php namespace Framework\Database;
+<?php namespace Webbins\Database;
 
 use \Exception;
 use \PDO;
