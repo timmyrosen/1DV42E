@@ -1,7 +1,7 @@
 <?php namespace Webbins\Routing;
 
-use \Exception;
-use \Closure;
+use Exception;
+use Closure;
 use Webbins\View\View;
 
 require('Filter.php');
@@ -25,18 +25,31 @@ class Router {
     private static $routes = array();
 
     /**
-     * Contains all avaiable filters.
+     * Contains all available filters.
      * @var  array
      */
     private static $filters = array();
 
-    private static $lock = false;
-
-    private static $routeCount = -1;
-
+    /**
+     * Temporary stores the latest routes so they
+     * can be configured with e.g scope() and https().
+     * @var  array
+     */
     private static $routeListener = array();
 
-    private static $lastMethodCalled;
+    /**
+     * Temporary stores all routes  that are created
+     * inside a group so they can be configured with
+     * e.g scope(), https() and so on.
+     * @var  array
+     */
+    private static $groupListener = array();
+
+    /**
+     * Used to determine if we're inside a group function.
+     * @var  boolean
+     */
+    private static $insideGroup = false;
 
     /**
      * Construct.
@@ -47,44 +60,16 @@ class Router {
         self::$self = $this;
     }
 
-    /*
-      När exempelvis resource körs i en group, så låser den upp,
-      sen låser den igen. Sen körs typ https() och då körs detta.
-      Men då är det ju låst som fan här, därför väljer den bara
-      den sista.
-    */
-    private function getStartRoute() {
-        if (self::$lock) {
-            return Count(self::$routes)-1;
-        }
-        return self::$routeCount;
-    }
-
-    private function getLastRoute() {
-        return Count(self::$routes);
-    }
-
-    private static function turnLockOn() {
-        self::$lock = true;
-        self::$routeCount = Count(self::$routes);
-    }
-
-    private static function turnLockOff() {
-        self::$lock = false;
-    }
-
     /**
      * Scope method.
      * @param   string  $scope
      * @return  Router
      */
     public function scope($scope) {
-        self::$lastMethodCalled = 'scope';
-        $first = $this->getStartRoute();
-        $last = $this->getLastRoute();
+        $routes = self::getListener();
 
-        for ($i=$first; $i<$last; $i++) {
-            self::$routes[$i]->setScope($scope);
+        foreach ($routes as $route) {
+            $route->setScope($scope);
         }
 
         return self::$self;
@@ -95,18 +80,10 @@ class Router {
      * @return  Router
      */
     public function https() {
-        self::$lastMethodCalled = 'https';
-        //var_dump(self::$routeListener);
+        $routes = self::getListener();
 
-        foreach (self::$routeListener as $key) {
-            //echo self::$routes[$key]->getPath().'<br>';
-        }
-
-        $first = $this->getStartRoute();
-        $last = $this->getLastRoute();
-
-        for ($i=$first; $i<$last; $i++) {
-            self::$routes[$i]->setHttps();
+        foreach ($routes as $route) {
+            $route->setHttps();
         }
 
         return self::$self;
@@ -118,6 +95,12 @@ class Router {
      * @return  Router
      */
     public function before($method) {
+        $routes = self::getListener();
+
+        foreach ($routes as $route) {
+            $route->setBefore($method);
+        }
+
         return self::$self;
     }
 
@@ -127,6 +110,12 @@ class Router {
      * @return  Router
      */
     public function after($method) {
+        $routes = self::getListener();
+
+        foreach ($routes as $route) {
+            $route->setAfter($method);
+        }
+
         return self::$self;
     }
 
@@ -148,7 +137,7 @@ class Router {
      * @return  Router
      */
     public static function get($path, $callback) {
-        self::$lastMethodCalled = 'get';
+        self::clearListeners();
         self::addRoute('GET', $path, $callback);
         return self::$self;
     }
@@ -160,6 +149,7 @@ class Router {
      * @return  Router
      */
     public static function post($path, $callback) {
+        self::clearListeners();
         self::addRoute('POST', $path, $callback);
         return self::$self;
     }
@@ -171,6 +161,7 @@ class Router {
      * @return  Router
      */
     public static function put($path, $callback) {
+        self::clearListeners();
         self::addRoute('PUT', $path, $callback);
         return self::$self;
     }
@@ -182,6 +173,7 @@ class Router {
      * @return  Router
      */
     public static function delete($path, $callback) {
+        self::clearListeners();
         self::addRoute('DELETE', $path, $callback);
         return self::$self;
     }
@@ -193,6 +185,7 @@ class Router {
      * @return  Router
      */
     public static function patch($path, $callback) {
+        self::clearListeners();
         self::addRoute('PATCH', $path, $callback);
         return self::$self;
     }
@@ -204,6 +197,7 @@ class Router {
      * @return  Router
      */
     public static function options($path, $callback) {
+        self::clearListeners();
         self::addRoute('OPTIONS', $path, $callback);
         return self::$self;
     }
@@ -219,14 +213,10 @@ class Router {
         assert(!empty($path), 'Missing path.');
         assert(!empty($callback), 'Missing callback.');
 
-        self::$routes[] = new Route($method, $path, $callback);
-        
-        if (!self::$lock) {
-            self::$routeListener = array();
-            self::$routeCount = Count(self::$routes)-1;
-        }
-        
-        self::$routeListener[] = Count(self::$routes)-1; // get last index
+        $route = new Route($method, $path, $callback);
+        self::$routes[] = $route;
+        self::$routeListener[] = $route;
+        if (self::$insideGroup) self::$groupListener[] = $route;
     }
 
     /**
@@ -236,17 +226,7 @@ class Router {
      * @return  void
      */
     public static function any($path, $callback) {
-        // initiate the local lock
-        $lock = false;
-
-        // if the global class lock is disabled, then turn
-        // on the local lock and turn on the global class
-        // lock. This will prevent the route counter from
-        // increasing.
-        if (!self::$lock) {
-            $lock = true;
-            self::turnLockOn();
-        }
+        self::clearListeners();
 
         // set up all routes
         self::addRoute('GET',       $path,    $callback);
@@ -254,12 +234,6 @@ class Router {
         self::addRoute('PUT',       $path,    $callback);
         self::addRoute('PATCH',     $path,    $callback);
         self::addRoute('DELETE',    $path,    $callback);
-
-        // if the local lock was turned on, then disable
-        // the global lock again before exiting.
-        if ($lock) {
-            self::turnLockOff();
-        }
         
         return self::$self;
     }
@@ -267,28 +241,16 @@ class Router {
     /**
      * Match method. Lets the user pass an array with
      * the request methods used to set up a path.
-     * 
-     * If there's any unclarity regarding the lock events, please
-     * refer to the Router::any() method for a detailed description.
      * @param   Array           $methods   e.g: array("get", "post")
      * @param   string          $path
      * @param   string|Closure  $callback
      * @return  Router
      */
     public static function match(Array $methods, $path, $callback) {
-        $lock = false;
-
-        if (!self::$lock) {
-            $lock = true;
-            self::turnLockOn();
-        }
+        self::clearListeners();
 
         foreach ($methods as $method) {
             self::addRoute($method, $path, $callback);
-        }
-
-        if ($lock) {
-            self::turnLockOff();
         }
 
         return self::$self;
@@ -298,28 +260,16 @@ class Router {
      * Resource method. The method creates paths inspired
      * by REST, based on the passed path. The callback must
      * be a reference of a controller, as a string.
-     *
-     * If there's any unclarity regarding the lock events, please
-     * refer to the Router::any() method for a detailed description.
      * @param   string  $path
      * @param   string  $callback
      * @return  Router
      */
     public static function resource($path, $callback) {
-        self::$lastMethodCalled = 'resource';
-
         if ($callback instanceof Closure) {
             throw new Exception("Your resource callback must be a string. Please type a controller.");
         }
 
-        $lock = false;
-
-        self::$routeListener = array();
-
-        if (!self::$lock) {
-            $lock = true;
-            self::turnLockOn();
-        }
+        self::clearListeners();
 
         // set up the resource in a RESTful way based on the path.
         self::addRoute('GET',       $path,              $callback.':index');
@@ -331,39 +281,50 @@ class Router {
         self::addRoute('PATCH',     $path,              $callback.':update');
         self::addRoute('DELETE',    $path,              $callback.':destroy');
 
-        if ($lock) {
-            self::turnLockOff();
-        }
-
         return self::$self;
     }
 
     /**
      * Group method.
-     *
-     * If there's any unclarity regarding the lock events, please
-     * refer to the Router::any() method for a detailed description.
      * @param   Closure  $callback
      * @return  Router
      */
     public static function group($callback) {
-        self::$lastMethodCalled = 'group';
-        $lock = false;
-
         self::$routeListener = array();
+        self::$groupListener = array();
 
-        if (!self::$lock) {
-            $lock = true;
-            self::turnLockOn();
-        }
-
+        self::$insideGroup = true;
         call_user_func($callback, array());
-
-        if ($lock) {
-            self::turnLockOff();
-        }
+        self::$insideGroup = false;
 
         return self::$self;
+    }
+
+    /**
+     * Clears the route listeners.
+     * Don't clear the group listener if we are currently inside
+     * a group. The group listener will be used later to determine
+     * which routes that were inside the group.
+     * @return  void
+     */
+    private static function clearListeners() {
+        if (!self::$insideGroup) {
+            self::$groupListener = array();
+        }
+
+        self::$routeListener = array();
+    }
+
+    /**
+     * Get all routes from either the group listener or the single
+     * route listener.
+     * @return  array
+     */
+    private static function getListener() {
+        if (!self::$insideGroup && !empty(self::$groupListener)) {
+            return self::$groupListener;
+        }
+        return self::$routeListener;
     }
 
     /**
@@ -428,47 +389,44 @@ class Router {
         // matches the routes. If it does, then execute it.
         foreach (self::$routes as $route) {
             if ($route->matchPath($uri, $method)) {
-                if ($route->getCallback() instanceof Closure) {
-                    $callback = $route->getCallback();
-
-                    $pathFound = true;
-                } else {
-                    // split controller from method.
-                    $r = preg_split('/\:|\.|\@/', $route->getCallback(), 2);
-                    $controller = $r[0];
-                    $function = $r[1];
-
-                    if ($route->getScope()) {
-                        $controller = $route->getScope().'\\'.$controller;
-                    }
-
-                    $callback = array(new $controller, $function);
-
-                    $pathFound = true;
+                if ($response = self::dispatch($route)) {
+                    return $response;
                 }
-
-                /*
-                return self::$self;
-                if (!(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on')) {
-                    //throw new Exception("This page can't be reached without https protocol.");
-                }
-                return self::$self;
-                */
-               
-                // run all befores
-                $route->getBefore();
-
-                $response = call_user_func($callback, $route->getParams());
-
-                // run all afters
-                $route->getAfter();
-
-                return $response;
             }
         }
 
-        if (!$pathFound) {
-            return View::abort(404, 'Path was not found.');
+        return View::abort(404, 'Path was not found.');
+    }
+
+    /**
+     * Dispatches the route.
+     * @param   Route   $route
+     * @return  string
+     */
+    private static function dispatch(Route $route) {
+        if ($route->getCallback() instanceof Closure) {
+            $callback = $route->getCallback();
+        } else {
+            // split controller from method.
+            $r = preg_split('/\:|\.|\@/', $route->getCallback(), 2);
+            $controller = $r[0];
+            $function = $r[1];
+
+            if ($route->getScope()) {
+                $controller = $route->getScope().'\\'.$controller;
+            }
+
+            $callback = array(new $controller, $function);
         }
+
+        // run all befores
+        $route->getBefore();
+
+        $response = call_user_func($callback, $route->getParams());
+
+        // run all afters
+        $route->getAfter();
+
+        return $response;
     }
 }
