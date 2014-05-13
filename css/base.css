@@ -1,0 +1,9 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+}
+
+.content {
+  margin-left: 20px;
+}
