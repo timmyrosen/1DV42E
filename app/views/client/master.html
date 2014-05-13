@@ -2,21 +2,22 @@
   <head>
     <title>Ladidaj daj</title>
     <meta charset="utf-8">
+    <link type="text/css" rel="stylesheet" href="css/base.css">
   </head>
   <body>
 
-    @include('client/top')
+    W.include('client/top')
 
     <div class="nav">
       <ul>
-        @render('navigation')
+        W.render('navigation')
       </ul>
     </div>
 
     <div class="content">
-      @render('content')
+      W.render('content')
     </div>
 
-    @include('client/footer')
+    W.include('client/footer')
   </body>
 </html>

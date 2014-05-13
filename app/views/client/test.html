@@ -1,11 +1,12 @@
-@extends('client/master')
+W.extends('client/master')
 
-@section('content')
-  <?php echo 'Här vare en echo.'; ?>
-  Det här är min sjukt najsiga test.html
-@stop
+W.block('content')
+  "Dis is ma lovly testing page." - {{ echo $name; }}
+  <hr>
+  <pre><?php echo Webbins\Routing\Router::getRoutesToString(); ?></pre>
+W.stop
 
-@section('navigation')
+W.block('navigation')
   <li>Ladidaj daj</li>
   <li>Ladidaj daj</li>
-@stop
+W.stop
