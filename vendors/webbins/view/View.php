@@ -28,20 +28,20 @@ class View {
      * Build takes the name of the view file which
      * is to be opened.
      * @param   string  $page
-     * @param   array   $options
+     * @param   array   $values
      * @return  void
      * @todo    Build or include a template engine.
      */
-    public static function render($page, $options=array()) {
-        $html = self::load($page);
+    public static function render($page, $values=array()) {
+        $html = self::load($page, $values);
 
-        if (preg_match('/@extends\(\'(.+)\'\)/', $html, $matches)) {
+        if (preg_match('/W\.extends\(\'(.+)\'\)/', $html, $matches)) {
             $partial = $html;
             $extends = $matches[1];
 
-            $master = self::load($extends);
+            $master = self::load($extends, $values);
 
-            preg_match_all('/@section\(\'(.+?)\'\)(.+?)@stop/s', $partial, $matches);
+            preg_match_all('/W\.block\(\'(.+?)\'\)(.+?)W\.stop/s', $partial, $matches);
 
             array_shift($matches);
 
@@ -49,8 +49,10 @@ class View {
             $values = $matches[1];
 
             for ($i=0; $i<count($keys); $i++) {
-                $master = preg_replace('/@render\(\''.$keys[$i].'\'\)/', $values[$i], $master);
+                $master = preg_replace('/W\.render\(\''.$keys[$i].'\'\)/', $values[$i], $master);
             }
+
+            $master = preg_replace('/\{\{\s?(.+?)\s?\}\}/', '<?php $1 ?>', $master);
 
             $html = $master;
         }
@@ -64,14 +66,19 @@ class View {
      * the content of the page as a string and
      * still executes the PHP code within.
      * @param   string  $page
+     * @param   array   $values
      * @return  string
      */
-    private static function load($page) {
+    private static function load($page, $values=array()) {
+        foreach ($values as $key => $value) {
+            ${$key} = $value;
+        }
+
         ob_start();
         require(self::$viewPath.'/'.$page.'.html');
         $html = ob_get_clean();
 
-        if (preg_match_all('/@include\(\'(.+?)\'\)/', $html, $matches)) {
+        if (preg_match_all('/W\.include\(\'(.+?)\'\)/', $html, $matches)) {
             $keys = $matches[0];
             $values = $matches[1];
             for ($i=0; $i<count($keys); $i++) {
@@ -96,11 +103,11 @@ class View {
     /**
      * Converts an object or array to a JSON object.
      * @param   object|array  $object
-     * @param   integer       $options
+     * @param   integer       $values
      * @param   integer       $depth
      * @return  string
      */
-    public static function json($object, $options=0, $depth=256) {
-        return json_encode($object, $options);
+    public static function json($object, $values=0, $depth=256) {
+        return json_encode($object, $values);
     }
 }
