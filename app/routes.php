@@ -1,9 +1,7 @@
 <?php
 use Webbins\Routing\Router;
 
-Router::get("/", "HomeController:index");
-
-Router::resource("stores", "StoresController");
+Router::get("/", "HomeController:index")->before("authenticate");
 
 Router::group(function() {
     Router::get("/home", "HomeController:index");
@@ -14,4 +12,6 @@ Router::group(function() {
     })->https();
 
     Router::resource("users", "UsersController");
-})->scope("admin");
+})->scope("admin")->https();
+
+Router::resource("stores", "StoresController");
