@@ -281,9 +281,9 @@ class Router {
         self::addRoute('POST',      $path,              $callback.':store');
         self::addRoute('GET',       $path.'/:id',       $callback.':show');
         self::addRoute('GET',       $path.'/:id/edit',  $callback.':edit');
-        self::addRoute('PUT',       $path,              $callback.':update');
-        self::addRoute('PATCH',     $path,              $callback.':update');
-        self::addRoute('DELETE',    $path,              $callback.':destroy');
+        self::addRoute('PUT',       $path.'/:id',       $callback.':update');
+        self::addRoute('PATCH',     $path.'/:id',       $callback.':update');
+        self::addRoute('DELETE',    $path.'/:id',       $callback.':destroy');
 
         return self::$self;
     }
@@ -441,14 +441,14 @@ class Router {
 
         // run all befores
         if ($route->getBefore()) {
-            call_user_func($route->getBefore()->getCallback());
+            call_user_func_array($route->getBefore()->getCallback(), array());
         }
 
-        $response = call_user_func($callback, $route->getParams());
+        $response = call_user_func_array($callback, $route->getParams());
 
         // run all afters
         if ($route->getAfter()) {
-            call_user_func($route->getAfter()->getCallback());
+            call_user_func_array($route->getAfter()->getCallback(), array());
         }
 
         return $response;
