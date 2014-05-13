@@ -6,5 +6,9 @@ Router::filter('authenticate', function() {
     if (isset($_SESSION['auth'])) {
         return true;
     }
-    header("Location: ".Config::get("path")."/signin");
+    header('Location: '.Config::get('path').'/signin');
+});
+
+Router::filter('sayHello', function() {
+    echo 'Hello there :)';
 });
