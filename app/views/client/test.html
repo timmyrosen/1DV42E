@@ -1,7 +1,7 @@
 W.extends('client/master')
 
 W.block('content')
-  "Dis is ma lovly testing page." - {{ echo $name; }}
+  "Dis is ma lovly testing page." - <?php echo $name; ?>
   <hr>
   <pre><?php echo Webbins\Routing\Router::getRoutesToString(); ?></pre>
 W.stop
