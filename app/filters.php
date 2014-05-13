@@ -7,6 +7,7 @@ Router::filter('authenticate', function() {
         return true;
     }
     header('Location: '.Config::get('path').'/signin');
+    exit();
 });
 
 Router::filter('sayHello', function() {

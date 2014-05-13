@@ -4,24 +4,8 @@ use Webbins\View\View;
 
 class StoresController {
     public function index() {
-        /*
-        $inserts = array(
-            'Name' => 'Mansnästet',
-            'Description' => 'Mansnästet är det bästa hänget.'
-        );
-        DB::table("Stores")->insert($inserts);
-
-
-        $keys = array('Name', 'Description');
-        $values = array('Mansnästet', 'Mansnästet är bästa hänget.');
-        */
-       
-        //DB::table("Stores")->insert($keys, $values);
-
         $objects = DB::table("Stores")
         ->select("*")
-        ->offset(1)
-        ->limit(2)
         ->get();
 
         $objects = DB::execute()->get();
@@ -30,12 +14,39 @@ class StoresController {
     }
 
     public function show($id) {
-        echo 'UserController, show function<br>';
-        echo 'ID: '.$id;
+        echo 'Show the store with the id: '.$id;
+        exit();
     }
 
     public function edit($id) {
-        echo 'Users controller, edit';
+        echo 'Edit store with id: '.$id;
+        exit();
+    }
+
+    public function create() {
+        echo 'Create a new store.';
+        exit();
+    }
+
+    public function store() {
+        echo 'Save a store.';
+        exit();
+
+        $inserts = array(
+            'Name' => 'Mansnästet',
+            'Description' => 'Mansnästet är det bästa hänget.'
+        );
+        //DB::table("Stores")->insert($inserts);
+
+
+        $keys = array('Name', 'Description');
+        $values = array('Mansnästet', 'Mansnästet är bästa hänget.');
+        //DB::table("Stores")->insert($keys, $values);
+    }
+
+    public function update() {
+        echo 'Update a store.';
+        exit();
     }
 
     public function destroy($id) {

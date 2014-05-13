@@ -1,9 +1,13 @@
+<?php
+use Webbins\Routing\Router;
+?>
+
 W.extends('client/master')
 
 W.block('content')
   "Dis is ma lovly testing page." - <?php echo $name; ?>
   <hr>
-  <pre><?php echo Webbins\Routing\Router::getRoutesToString(); ?></pre>
+  <pre><?php echo Router::getRoutesToString(); ?></pre>
 W.stop
 
 W.block('navigation')

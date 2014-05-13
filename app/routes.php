@@ -1,7 +1,7 @@
 <?php
 use Webbins\Routing\Router;
 
-Router::get("/", "HomeController:index")->before("sayHello");
+Router::get("/", "HomeController:index")->before('sayHello');
 
 Router::group(function() {
     Router::get("/home", "HomeController:index");
