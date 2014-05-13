@@ -95,10 +95,12 @@ class Router {
      * @return  Router
      */
     public function before($method) {
+        $filter = self::findFilter($method);
+
         $routes = self::getListener();
 
         foreach ($routes as $route) {
-            $route->setBefore($method);
+            $route->setBefore($filter);
         }
 
         return self::$self;
@@ -110,10 +112,12 @@ class Router {
      * @return  Router
      */
     public function after($method) {
+        $filter = self::findFilter($method);
+
         $routes = self::getListener();
 
         foreach ($routes as $route) {
-            $route->setAfter($method);
+            $route->setAfter($filter);
         }
 
         return self::$self;
@@ -328,6 +332,22 @@ class Router {
     }
 
     /**
+     * Find a filter by name.
+     * @param   string   $name
+     * @return  boolean
+     * @throws  Exception
+     */
+    private static function findFilter($name) {
+        foreach (self::$filters as $filter) {
+            if ($filter->getName() == $name) {
+                return $filter;
+            }
+        }
+
+        throw new Exception('No filter named '.$method.' was found.');
+    }
+
+    /**
      * Get all routes as an array.
      * @return  array
      */
@@ -420,12 +440,16 @@ class Router {
         }
 
         // run all befores
-        $route->getBefore();
+        if ($route->getBefore()) {
+            call_user_func($route->getBefore()->getCallback());
+        }
 
         $response = call_user_func($callback, $route->getParams());
 
         // run all afters
-        $route->getAfter();
+        if ($route->getAfter()) {
+            call_user_func($route->getAfter()->getCallback());
+        }
 
         return $response;
     }

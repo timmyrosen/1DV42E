@@ -1,7 +1,7 @@
 <?php namespace Webbins\Routing;
 
-use \Exception;
-use \Closure;
+use Exception;
+use Closure;
 
 class Route {
     private $callback;
@@ -100,14 +100,18 @@ class Route {
 
     /**
      * Set before function.
-     * @param  string  $action
+     * @param  Filter  $filter
      */
-    public function setBefore($action) {
-        $this->before = $action;
+    public function setBefore(Filter $filter) {
+        $this->before = $filter;
     }
 
-    public function setAfter($action) {
-        $this->after = $action;
+    /**
+     * Set after function.
+     * @param  Filter  $filter
+     */
+    public function setAfter(Filter $filter) {
+        $this->after = $filter;
     }
 
     /**

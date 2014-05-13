@@ -1,7 +1,7 @@
 <?php namespace Webbins\Routing;
 
-use \Exception;
-use \Closure;
+use Exception;
+use Closure;
 
 class Filter {
     private $name;
