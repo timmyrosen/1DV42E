@@ -8,8 +8,6 @@ class StoresController {
         ->select("*")
         ->get();
 
-        $objects = DB::execute()->get();
-
         return View::json($objects);
     }
 
