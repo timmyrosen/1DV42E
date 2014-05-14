@@ -1,5 +1,6 @@
 <?php namespace Webbins\View;
 
+use Exception;
 // @todo  refactor this code, maybe create a separate template class
 
 class View {
@@ -107,7 +108,11 @@ class View {
      * @param   integer       $depth
      * @return  string
      */
-    public static function json($object, $values=0, $depth=256) {
-        return json_encode($object, $values);
+    public static function json($object, $options=0, $depth=256) {
+        $json = json_encode($object, $options);
+        if (json_last_error()) {
+            throw new Exception(json_last_error_msg());
+        }
+        return $json;
     }
 }
