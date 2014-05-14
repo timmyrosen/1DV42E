@@ -104,7 +104,7 @@ class View {
     /**
      * Converts an object or array to a JSON object.
      * @param   object|array  $object
-     * @param   integer       $values
+     * @param   integer       $options
      * @param   integer       $depth
      * @return  string
      */
@@ -114,5 +114,17 @@ class View {
             throw new Exception(json_last_error_msg());
         }
         return $json;
+    }
+
+    /**
+     *  Converts an object to a string by using
+     *  output buffering strategy.
+     *  @param   mixed  $object
+     *  @return  string
+     */
+    public static function debug($object) {
+        ob_start();
+        var_dump($object);
+        return ob_get_clean();
     }
 }
