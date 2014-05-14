@@ -1,9 +1,10 @@
 <?php namespace Webbins\Autoloading;
 
-use \RecursiveDirectoryIterator;
-use \RecursiveIteratorIterator;
-use \RegexIterator;
-use \RecursiveRegexIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RegexIterator;
+use RecursiveRegexIterator;
+use Exception;
 
 class Autoloader {
     /**
@@ -26,7 +27,7 @@ class Autoloader {
 
     /**
      * Construct.
-     * 
+     *
      * Check if a cache file already exists. If
      * not, then create an empty file, scan through all
      * directories and cache the files.
@@ -125,7 +126,7 @@ class Autoloader {
     private function executeFiles($files) {
         foreach ($files as $file) {
             if (!empty($file)) {
-                require($file);   
+                require($file);
             }
         }
     }
@@ -146,6 +147,8 @@ class Autoloader {
      * @return  void
      */
     private function createCacheFile() {
-        touch($this->path);
+        if (!touch($this->path)) {
+            throw new Exception('Couldn\'t create the cache file for the Autoloader. Do you have permissions?');
+        }
     }
 }
