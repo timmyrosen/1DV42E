@@ -1,8 +1,8 @@
 <?php namespace Webbins\Database;
 
-use \Exception;
-use \PDO;
-use \PDOException;
+use Exception;
+use PDO;
+use PDOException;
 
 require('Join.php');
 require('Where.php');
@@ -330,7 +330,7 @@ class DB {
         $c = trim($c, ', ');
         $v = trim($v, ', ');
 
-        $query = 'Insert Into '.self::$tables.' ('.$c.') Values ('.$v.');';
+        $query = 'Insert Into '.$this->getTables().' ('.$c.') Values ('.$v.');';
 
         self::$preparedStatement = $this->connection->prepare($query);
 
@@ -345,7 +345,7 @@ class DB {
 
     public function get($mode=self::OBJECTS) {
         $this->prepare();
-        self::$preparedStatement->execute();
+        self::execute();
         return self::$preparedStatement->fetchAll($mode);
     }
 
@@ -376,6 +376,11 @@ class DB {
 
     public static function execute() {
         self::$preparedStatement->execute();
+
+        if (self::$preparedStatement->errorInfo()[1]) {
+            throw new Exception(self::$preparedStatement->errorInfo()[2]);
+        }
+
         return self::$self;
     }
 }
