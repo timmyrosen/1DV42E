@@ -1,0 +1,25 @@
+.list-icon {
+  float: right;
+  padding: 5px 15px;
+}
+.delete-category {
+  color: red;
+  &:hover {
+    color: black;
+  }
+}
+#categories {
+  .panel {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .panel-heading {
+    h1 {
+      float: left;
+    }
+    a.new-category {
+      float: right;
+    }
+  }
+}

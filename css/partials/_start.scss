@@ -1,0 +1,21 @@
+.nav.igive-tabs a {
+	color: #666;
+	border-radius: 0;
+}
+.nav.igive-tabs a:hover {
+	background: none;
+	color: $orange;
+	border: 0;
+	padding: 10px 15px;
+	margin-top: 1px;
+	margin-left: 1px;
+}
+.nav.igive-tabs li.active a:hover {
+	margin-top: 0;
+	margin-left: 0;
+}
+.nav.igive-tabs li.active a {
+	color: $orange;
+	font-weight: bold;
+	border-top: 1px solid $orange;
+}

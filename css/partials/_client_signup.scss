@@ -1,0 +1,28 @@
+#client-signup-table {
+	tr {
+		td, th {
+			text-align: center;
+			&:first-child {
+				text-align: left;
+			}
+			.fa-check {
+				color: $orange;
+			}
+		}
+	}
+}
+
+.name-slug {
+	label {
+		display: block;
+	}
+	span {
+		float: left;
+		padding-top: 6px;
+		width: 25%;
+	}
+	input {
+		float: left;
+		width: 75%;
+	}
+}

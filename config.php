@@ -9,9 +9,9 @@ $config = [
     ],
     'database' => [
         'host'    => 'localhost',
-        'user'    => 'robin',
-        'pass'    => 'robin',
-        'db'      => 'robin_rabattrea',
+        'user'    => 'root',
+        'pass'    => 'root',
+        'db'      => 'supporting',
         'driver'  => 'mysql',
         'charset' => 'utf8'
     ],
