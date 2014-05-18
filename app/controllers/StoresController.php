@@ -8,7 +8,7 @@ class StoresController {
         ->select("*")
         ->get();
 
-        return View::json($objects);
+        return View::render('client/stores/index', array('stores' => $objects));
     }
 
     public function show($id) {
@@ -22,8 +22,7 @@ class StoresController {
     }
 
     public function create() {
-        echo 'Create a new store.';
-        exit();
+        return View::render('client/stores/create');
     }
 
     public function store() {

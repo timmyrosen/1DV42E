@@ -17,7 +17,7 @@ class Router {
      * @var  Router
      */
     private static $self;
-    
+
     /**
      * Contains all available routes.
      * @var  array
@@ -238,7 +238,7 @@ class Router {
         self::addRoute('PUT',       $path,    $callback);
         self::addRoute('PATCH',     $path,    $callback);
         self::addRoute('DELETE',    $path,    $callback);
-        
+
         return self::$self;
     }
 
