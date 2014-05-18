@@ -124,6 +124,21 @@ class Router {
     }
 
     /**
+     * Prefix method.
+     * @param   string  $prefix
+     * @return  Router
+     */
+    public function prefix($prefix) {
+        $routes = self::getListener();
+
+        foreach ($routes as $route) {
+            $route->setPrefix($prefix);
+        }
+
+        return self::$self;
+    }
+
+    /**
      * Filter method which is runned when a user creates a
      * new filter.
      * @param   string   $name
@@ -358,8 +373,9 @@ class Router {
             $return[] = array(
                 'method'    => $route->getMethod(),
                 'scope'     => $route->getScope(),
-                'path'      => $route->getPath(),
-                'callback'  => $route->getCallback()
+                'path'      => $route->getPrefix().$route->getPath(),
+                'callback'  => $route->getCallback(),
+                'https'     => $route->getHttps()
             );
         }
 
@@ -385,7 +401,7 @@ class Router {
             $return .= '<tr>';
             $return .= '<td>'.$route->getMethod().'</td>';
             $return .= '<td>'.$route->getScope().'</td>';
-            $return .= '<td>'.$route->getPath().'</td>';
+            $return .= '<td>'.$route->getPrefix().$route->getPath().'</td>';
             $return .= '<td>'.$route->getCallbackToString().'</td>';
             $return .= '<td>'.$route->getHttps().'</td>';
             $return .= '</tr>';
