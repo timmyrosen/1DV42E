@@ -19,6 +19,11 @@ class DB {
     private static $self;
 
     /**
+     * If connect is false, then a database isn't connected.
+     */
+    private static $connect = false;
+
+    /**
      * Stores the PDO connection.
      * @var  PDO object
      */
@@ -87,22 +92,30 @@ class DB {
      * @param  string  $user
      * @param  string  $password
      */
-    public function __construct($driver, $host, $database, $user, $password) {
+    public function __construct($driver, $host, $database, $user, $password, $connect=true) {
         self::$self = $this;
 
-        $dsn = $driver.':dbname='.$database.';host='.$host;
+        self::$connect = $connect;
 
-        $this->connection = new PDO($dsn, $user, $password);
+        if ($connect) {
+            $dsn = $driver.':dbname='.$database.';host='.$host;
+
+            $this->connection = new PDO($dsn, $user, $password);
+        }
     }
 
     /**
      * Add one or multiple tables (separated by comma (,))
      * do the tables array.
      * @param   string  $tables
+     * @throws  Exception
      * @return  Database
      */
     public static function table($tables) {
-        $tables = explode(",", $tables);
+        if (!self::$connect) {
+            throw new Exception('The database connection is turned off. Switch it on in the config file.');
+        }
+        $tables = explode(',', $tables);
 
         foreach ($tables as $table) {
             self::$tables[] = trim($table);

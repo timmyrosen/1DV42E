@@ -19,11 +19,12 @@ new Routing\Router();
 new View\View();
 
 new Database\DB(
-    Config::get("database:driver"),
-    Config::get("database:host"),
-    Config::get("database:db"),
-    Config::get("database:user"),
-    Config::get("database:pass")
+    Config::get('database:driver'),
+    Config::get('database:host'),
+    Config::get('database:db'),
+    Config::get('database:user'),
+    Config::get('database:pass'),
+    Config::get('database:connect')
 );
 
 new Autoloading\Autoloader(

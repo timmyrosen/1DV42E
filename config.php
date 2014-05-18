@@ -9,6 +9,7 @@ $config = [
         'error' => 'logs/error.log'
     ],
     'database' => [
+        'connect' => true,
         'host'    => 'localhost',
         'user'    => 'robin',
         'pass'    => 'robin',
@@ -17,7 +18,7 @@ $config = [
         'charset' => 'utf8'
     ],
     'autoloading' => [
-        'cacheFiles'    => true,
+        'cacheFiles'    => false,
         'path'          => 'autoloader.cache',
         'resources'     => ['app/'],
         'excludes'      => ['']
