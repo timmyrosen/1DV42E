@@ -1,23 +1,21 @@
 <html lang="en">
   <head>
-    <title>Ladidaj daj</title>
+    <title>Webbins</title>
     <meta charset="utf-8">
     <link type="text/css" rel="stylesheet" href="css/base.css">
   </head>
   <body>
-
-    W.include('client/top')
-
+    <div class="header">
+      <h1>En header</h1>
+    </div>
     <div class="nav">
       <ul>
-        W.render('navigation')
+        W.include('client/navigation')
       </ul>
     </div>
 
     <div class="content">
       W.render('content')
     </div>
-
-    W.include('client/footer')
   </body>
 </html>

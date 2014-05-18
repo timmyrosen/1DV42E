@@ -2,8 +2,9 @@
 
 $config = [
     'host'      => 'localhost',
-    'path'      => '/1DV42E',
+    'path'      => 'other/current/binframework/1DV42E',
     'views'     => 'app/views',
+    'tmpViews'  => 'app/tmp/views',
     'logs' => [
         'error' => 'logs/error.log'
     ],
@@ -16,9 +17,14 @@ $config = [
         'charset' => 'utf8'
     ],
     'autoloading' => [
-        'cacheFiles'    => true,
+        'cacheFiles'    => false,
         'path'          => 'autoloader.cache',
         'resources'     => ['app/'],
         'excludes'      => ['']
+    ],
+    'namespaces' => [
+        'Webbins\Database\DB',
+        'Webbins\Session\Session',
+        'Webbins\Cookie\Cookie'
     ]
 ];

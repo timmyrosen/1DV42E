@@ -40,9 +40,11 @@ class CategoriesController {
 
         return View::render('categories/new', array('categories' => $categories));
     }
-
-    public function store($data) {
-        return View::json(Router::getRoutes());
-        return View::json($data);
+    /**
+     * This retrieves the POST call for creating a new category
+     */
+    public function store() {
+        print_r($_POST);
+        return 'YO';
     }
 }

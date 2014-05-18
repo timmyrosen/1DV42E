@@ -12,11 +12,11 @@ require('vendors/webbins/database/DB.php');
 require('vendors/webbins/session/Session.php');
 require('vendors/webbins/cookie/Cookie.php');
 
-new Config();
+$config = new Config();
 
 new Routing\Router();
 
-new View\View(Config::get('views'));
+new View\View();
 
 new Database\DB(
     Config::get("database:driver"),
