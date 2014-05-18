@@ -1,0 +1,28 @@
+W.extends('start/index')
+
+W.block('content')
+    <div class="top-title">
+        <h1>Ny kategori</h1>
+        <a href="../categories" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Tillbaka</a>
+        <div class="clearfix"></div>
+    </div>
+    <form action="../categories" method="post" class="form-inline" role="form">
+        <div class="form-group">
+            <label>Ny kategori</label>
+            <input type="text" name="category-name" class="form-control" placeholder="Namn på kategori">
+        </div>
+        <div class="form-group">
+            <label>Förälder</label>
+            <select class="form-control" name="category-parent">
+                <option value="0">Ingen</option>
+                {{ foreach ($categories as $key => $val) { }}                 
+                    <option value="{{ echo $val->id; }}"> {{ echo $val->name; }} </option>
+                {{ } }}
+            </select>
+        </div>
+        <div class="form-group">
+            <label> &nbsp; </label>
+            <input type="submit" name="save-category" value="Spara" class="btn btn-primary form-control" onClick="return confirm('Är du säker?');">
+        </div>
+   </form>
+W.end

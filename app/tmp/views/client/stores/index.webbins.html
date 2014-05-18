@@ -1,0 +1,12 @@
+W.extends('client/master')
+
+W.block('content')
+  <a href="stores/create">Skapa en ny</a>
+  <ul>
+  {{
+  foreach ($stores as $store) {
+      echo '<li>'.$store->Name.' ('.$store->Description.')</li>';
+  }
+  }}
+  </ul>
+W.end
