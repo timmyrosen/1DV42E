@@ -126,7 +126,7 @@ class Compiler {
 
         if ($this->storing) {
             $code = $this->addNamespaces($code);
-            
+
             $compiledPage = $this->storeCompiledCode($this->page, $code);
             return $this->runCompiledCode($compiledPage, $this->params);
         }
@@ -188,7 +188,7 @@ class Compiler {
      * @return  string
      */
     private function compileExtends($code) {
-        if (preg_match('/'.$this->tags['extends'].'\(\'(.+)\'\)/', $code, $matches)) {
+        if (preg_match('/'.$this->tags['extends'].'\([\'|\"](.+)[\'|\"]\)/', $code, $matches)) {
             // store the extends command: "W.extends('whatever')"
             $extendsCmd = $matches[0];
 
@@ -209,7 +209,7 @@ class Compiler {
      *  @return  string
      */
     private function compileIncludes($code) {
-        if (preg_match_all('/'.$this->tags['include'].'\(\'(.+?)\'\)/', $code, $matches)) {
+        if (preg_match_all('/'.$this->tags['include'].'\([\'|\"](.+?)[\'|\"]\)/', $code, $matches)) {
             $keys = $matches[0];
             $pages = $matches[1];
             for ($i=0; $i<count($keys); $i++) {
@@ -228,13 +228,13 @@ class Compiler {
      *  @return  string
      */
     private function compileRenders($code) {
-        if (preg_match_all('/'.$this->tags['block'].'\(\'(.+?)\'\)(.+?)'.$this->tags['end'].'/s', $code, $matches)) {
+        if (preg_match_all('/'.$this->tags['block'].'\([\'|\"](.+?)[\'|\"]\)(.+?)'.$this->tags['end'].'/s', $code, $matches)) {
             $default = $matches[0];
             $keys = $matches[1];
             $values = $matches[2];
             for ($i=0; $i<count($keys); $i++) {
                 $code = str_replace($default[$i], '', $code);
-                $code = preg_replace('/'.$this->tags['render'].'\(\''.$keys[$i].'\'\)/', $values[$i], $code);
+                $code = preg_replace('/'.$this->tags['render'].'\([\'|\"]'.$keys[$i].'[\'|\"]\)/', $values[$i], $code);
             }
         }
 
