@@ -11,7 +11,7 @@ require('vendors/webbins/view/View.php');
 require('vendors/webbins/routing/Router.php');
 require('vendors/webbins/database/DB.php');
 require('vendors/webbins/sessions/Session.php');
-require('vendors/webbins/cookie/Cookie.php');
+require('vendors/webbins/cookies/Cookie.php');
 
 $config = new Config();
 
