@@ -25,7 +25,7 @@ $config = [
     ],
     'namespaces' => [
         'Webbins\Database\DB',
-        'Webbins\Session\Session',
-        'Webbins\Cookie\Cookie'
+        'Webbins\Sessions\Session',
+        'Webbins\Cookies\Cookie'
     ]
 ];
