@@ -32,16 +32,15 @@ class Session {
     }
 
     /**
-     * Destroy a session.
-     * @return  void
-     * @throws  Exception
+     * Get a session and let it destroy itself afterwards.
+     * @param   string  $key
+     * @return  mixed
      */
-    public static function destroy($key) {
-        if (!self::has($key)) {
-            throw new Exception('The session key don\'t exist.');
-        }
+    public static function getOnce($key) {
+        $value = self::get($key);
+        self::destroy($key);
 
-        unset($_SESSION[$key]);
+        return $value;
     }
 
     /**
@@ -57,6 +56,19 @@ class Session {
         }
 
         return false;
+    }
+
+    /**
+     * Destroy a session.
+     * @return  void
+     * @throws  Exception
+     */
+    public static function destroy($key) {
+        if (!self::has($key)) {
+            throw new Exception('The session key don\'t exist.');
+        }
+
+        unset($_SESSION[$key]);
     }
 
     /**
