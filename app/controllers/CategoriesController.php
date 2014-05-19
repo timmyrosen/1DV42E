@@ -1,5 +1,6 @@
 <?php
 use Webbins\Database\DB;
+use Webbins\Redirecting\Redirect;
 use Webbins\View\View;
 
 class CategoriesController {
@@ -47,9 +48,14 @@ class CategoriesController {
      * This retrieves the POST call for creating a new category
      */
     public function store() {
-        print_r($_POST);
-        $name = $_POST['category-name'];
-        $parent = $_POST['category-parent'];
-        return 'YO';
+        $storeCategory = new Services\StoreCategory();
+        $response = $storeCategory->run();
+        
+        if ($response !== true) {
+            Redirect::to('categories/create', array('message' => $response, 'message-class' => 'error'));
+        }
+        if ($storeCategory->store()) {
+            Redirect::to('categories/create', array('message' => array('Kategorin skapades'), 'message-class' => 'success'));
+        }
     }
 }

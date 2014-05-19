@@ -6,6 +6,18 @@ W.block('content')
         <a href="categories" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Tillbaka</a>
         <div class="clearfix"></div>
     </div>
+    {{ 
+        if (Session::has('message')) {
+            $message = Session::get('message');
+            $messageClass = Session::has('message-class') ? Session::get('message-class') : 'default';
+            echo '<div class="'.$messageClass.'">';
+            foreach ($message as $message) {
+                echo '<p>'.$message.'</p>';
+            }
+            echo '</div>';
+            Session::destroy('message');
+        }
+    }}
     <form action="../categories" method="post" class="form-inline" role="form">
         <div class="form-group">
             <label>Ny kategori</label>
@@ -22,7 +34,7 @@ W.block('content')
         </div>
         <div class="form-group">
             <label> &nbsp; </label>
-            <input type="submit" name="save-category" value="Spara" class="btn btn-primary form-control" onClick="return confirm('Är du säker?');">
+            <input type="submit" name="save-category" value="Spara" class="btn btn-primary form-control">
         </div>
    </form>
 W.end
