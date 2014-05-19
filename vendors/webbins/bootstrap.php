@@ -6,6 +6,7 @@ require('vendors/webbins/config/Config.php');
 require('vendors/webbins/autoloading/Autoloader.php');
 require('vendors/webbins/logging/Log.php');
 require('vendors/webbins/debugging/Debug.php');
+require('vendors/webbins/redirecting/Redirect.php');
 require('vendors/webbins/view/View.php');
 require('vendors/webbins/routing/Router.php');
 require('vendors/webbins/database/DB.php');
@@ -13,6 +14,8 @@ require('vendors/webbins/session/Session.php');
 require('vendors/webbins/cookie/Cookie.php');
 
 $config = new Config();
+
+new Redirecting\Redirect();
 
 new Routing\Router();
 
