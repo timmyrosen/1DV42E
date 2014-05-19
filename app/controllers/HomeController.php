@@ -1,5 +1,5 @@
 <?php
-use Webbins\View\View;
+use Webbins\Views\View;
 
 class HomeController {
     public function index() {
