@@ -1,7 +1,7 @@
 <?php namespace Webbins\Redirecting;
 
 use Exception;
-use Webbins\Session\Session;
+use Webbins\Sessions\Session;
 
 class Redirect {
     /**
