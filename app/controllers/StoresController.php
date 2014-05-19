@@ -1,6 +1,6 @@
 <?php
 use Webbins\Database\DB;
-use Webbins\View\View;
+use Webbins\Views\View;
 
 class StoresController {
     public function index() {

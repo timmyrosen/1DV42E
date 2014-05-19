@@ -7,7 +7,7 @@ require('vendors/webbins/autoloading/Autoloader.php');
 require('vendors/webbins/logging/Log.php');
 require('vendors/webbins/debugging/Debug.php');
 require('vendors/webbins/redirecting/Redirect.php');
-require('vendors/webbins/view/View.php');
+require('vendors/webbins/views/View.php');
 require('vendors/webbins/routing/Router.php');
 require('vendors/webbins/database/DB.php');
 require('vendors/webbins/sessions/Session.php');
@@ -19,7 +19,7 @@ new Redirecting\Redirect();
 
 new Routing\Router();
 
-new View\View();
+new Views\View();
 
 new Database\DB(
     Config::get('database:driver'),

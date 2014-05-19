@@ -1,4 +1,4 @@
-<?php namespace Webbins\View;
+<?php namespace Webbins\Views;
 
 use Exception;
 
