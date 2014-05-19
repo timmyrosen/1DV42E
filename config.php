@@ -9,6 +9,7 @@ $config = [
         'error' => 'logs/error.log'
     ],
     'database' => [
+        'connect' => true,
         'host'    => 'localhost',
         'user'    => 'root',
         'pass'    => 'root',

@@ -40,7 +40,7 @@ class View {
      * @return  void
      */
     public static function abort($code=0, $message='') {
-        return self::render('abort', array('code' => $code, 'message' => $message));
+        return self::render('webbins/abort', array('code' => $code, 'message' => $message));
     }
 
     /**

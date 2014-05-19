@@ -13,6 +13,7 @@ class Route {
     private $before;
     private $after;
     private $https;
+    private $prefix = '';
 
     /**
      * Construct.
@@ -38,12 +39,28 @@ class Route {
     }
 
     /**
+     * Get method.
+     * @return  string
+     */
+    public function getMethod() {
+        return $this->method;
+    }
+
+    /**
      * Set path.
      * @param   string  $path
      * @return  void
      */
     private function setPath($path) {
         $this->path = $path;
+    }
+
+    /**
+     * Get path.
+     * @return  string
+     */
+    public function getPath() {
+        return $this->path;
     }
 
     /**
@@ -72,12 +89,28 @@ class Route {
     }
 
     /**
+     * Get pattern.
+     * @return  string
+     */
+    public function getPattern() {
+        return $this->pattern;
+    }
+
+    /**
      * Set parameters.
      * @param   array  $params
      * @return  void
      */
     private function setParams(Array $params) {
         $this->params = $params;
+    }
+
+    /**
+     * Get parameters.
+     * @return  array
+     */
+    public function getParams() {
+        return $this->params;
     }
 
     /**
@@ -90,75 +123,20 @@ class Route {
     }
 
     /**
+     * Get callback.
+     * @return  string|Closure
+     */
+    public function getCallback() {
+        return $this->callback;
+    }
+
+    /**
      * Set scope.
      * @param   string  $scope
      * @return  void
      */
     public function setScope($scope) {
         $this->scope = $scope;
-    }
-
-    /**
-     * Set before function.
-     * @param  Filter  $filter
-     */
-    public function setBefore(Filter $filter) {
-        $this->before = $filter;
-    }
-
-    /**
-     * Set after function.
-     * @param  Filter  $filter
-     */
-    public function setAfter(Filter $filter) {
-        $this->after = $filter;
-    }
-
-    /**
-     * Set https.
-     */
-    public function setHttps() {
-        $this->https = true;
-    }
-
-    /**
-     * Get method.
-     * @return  string
-     */
-    public function getMethod() {
-        return $this->method;
-    }
-
-    /**
-     * Get path.
-     * @return  string
-     */
-    public function getPath() {
-        return $this->path;
-    }
-
-    /**
-     * Get pattern.
-     * @return  string
-     */
-    public function getPattern() {
-        return $this->pattern;
-    }
-
-    /**
-     * Get parameters.
-     * @return  array
-     */
-    public function getParams() {
-        return $this->params;
-    }
-
-    /**
-     * Get callback.
-     * @return  string|Closure
-     */
-    public function getCallback() {
-        return $this->callback;
     }
 
     /**
@@ -170,23 +148,70 @@ class Route {
     }
 
     /**
+     * Set before function.
+     * @param   Filter  $filter
+     * @return  void
+     */
+    public function setBefore(Filter $filter) {
+        $this->before = $filter;
+    }
+
+    /**
      * Get before functon.
-     * @return  string
+     * @return  Filter
      */
     public function getBefore() {
         return $this->before;
     }
 
+    /**
+     * Set after function.
+     * @param   Filter  $filter
+     * @return  void
+     */
+    public function setAfter(Filter $filter) {
+        $this->after = $filter;
+    }
+
+    /**
+     * Get after function.
+     * @return  Filter
+     */
     public function getAfter() {
         return $this->after;
     }
 
     /**
+     * Set https.
+     * @return  void
+     */
+    public function setHttps() {
+        $this->https = true;
+    }
+
+    /**
      * Get https.
-     * @return  [type]
+     * @return  bool
      */
     public function getHttps() {
         return $this->https;
+    }
+
+    /**
+     * Set prefix.
+     * @param   string  $prefix
+     * @return  void
+     */
+    public function setPrefix($prefix) {
+        $this->prefix = $prefix.'/';
+    }
+
+    /**
+     * Get https.
+     * @return  bool
+     */
+    public function getPrefix() {
+        return $this->prefix;
     }
 
     /**
@@ -212,7 +237,7 @@ class Route {
         // if it's a match, then remove the first index (preg_match returns
         // the whole matching string as first index), set the parameters
         // and return true.
-        if (preg_match('/^'.$this->getPattern().'$/', $uri, $matches) && $this->getMethod() == strtoupper($method)) {
+        if (preg_match('/^'.str_replace('/', '\/', $this->getPrefix()).$this->getPattern().'$/', $uri, $matches) && $this->getMethod() == strtoupper($method)) {
             array_shift($matches);
             $this->setParams($matches);
             return true;

@@ -11,17 +11,19 @@ class CategoriesController {
 
     /**
      * Retrieves all categories
+     * @return  object
      */
     private function getCategories() {
         $objects = DB::table("categories")
         ->select("*")
         ->get();
 
-        return DB::execute()->get();
+        return $objects;
     }
 
     /**
      * Retrieves the categories that could be parents
+     * @return  object
      */
     private function getParentCategories() {
         $objects = DB::table("categories")
@@ -29,11 +31,12 @@ class CategoriesController {
         ->where("parent_id", "=", "0")
         ->get();
 
-        return DB::execute()->get();
+        return $objects;
     }
 
     /**
      * View to create a new catgory
+     * @return  string
      */
     public function create() {
         $categories = $this->getParentCategories();
@@ -45,6 +48,8 @@ class CategoriesController {
      */
     public function store() {
         print_r($_POST);
+        $name = $_POST['category-name'];
+        $parent = $_POST['category-parent'];
         return 'YO';
     }
 }
