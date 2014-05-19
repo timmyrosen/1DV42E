@@ -1,13 +1,13 @@
 <?php
 use Webbins\Routing\Router;
-use Webbins\Config\Config;
+use Webbins\Redirecting\Redirect;
+use Webbins\Sessions\Session;
 
 Router::filter('authenticate', function() {
-    if (isset($_SESSION['auth'])) {
+    if (Session::has('auth')) {
         return true;
     }
-    header('Location: '.Config::get('path').'/signin');
-    exit();
+    Redirect::to('signin');
 });
 
 Router::filter('sayHello', function() {

@@ -1,0 +1,33 @@
+<div class="panel panel-default">
+    <li class="list-group-item">
+        <div class="panel-heading">
+            <h1 class="panel-title">
+                <a data-toggle="collapse" data-parent="#categories" href="#first-group-{{ echo $val->id; }}">{{ echo $val->name; }}</a>
+            </h1>
+            <a href="/categories/new/{{ echo $val->id; }}" class="list-icon new-category">
+                <i class="fa fa-plus-circle"></i>
+            </a>
+            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
+        <ul class="list-group panel-collapse collapse" id="first-group-{{ echo $val->id; }}">
+        {{ foreach ($categories as $key2 => $val2) {
+            if ($val2->parent_id != $val->id) continue; }}
+            <div class="panel panel-default">
+                <li class="list-group-item">
+                    <div class="panel-heading">
+                        <h1 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#categories" href="#second-group-{{ echo $val2->id; }}">{{ echo $val2->name; }}</a>
+                        </h1>
+                        <a href="/categories/new/{{ echo $val2->id; }}" class="list-icon new-category">
+                            <i class="fa f-plus-circle"></i>
+                        </a>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="clearfix"></div>
+                </li>
+            </div>
+        {{ } }} <!-- Second loop end -->
+        </ul>
+    </li>
+</div> 

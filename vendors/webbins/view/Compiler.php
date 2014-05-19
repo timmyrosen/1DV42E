@@ -143,7 +143,7 @@ class Compiler {
         if (!$code = file_get_contents($url)) {
             throw new Exception('Couldn\'t open '.$url);
         }
-        $code = $this->absoluteHrefs($code);
+        $code = $this->absolutePaths($code);
         return $code;
     }
 
@@ -271,11 +271,12 @@ class Compiler {
     }
 
     /**
-     *  Forces all href="" to look from root directory automagically.
+     *  Forces all href="" and src="" to look from root
+     *  directory automagically.
      *  @param   string  $code
      *  @return  string
      */
-    private function absoluteHrefs($code) {
-        return preg_replace('/href=([\"|\'])(.+?)([\"|\'])/', 'href=$1/'.$this->basePath.'/$2$3', $code);
+    private function absolutePaths($code) {
+        return preg_replace('/(href|src)=([\"|\'])(?!http:\/\/|https:\/\/|\/\/)(.+?)([\"|\'])/', '$1=$2/'.$this->basePath.'/$3$4', $code);
     }
 }
