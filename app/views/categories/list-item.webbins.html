@@ -4,7 +4,7 @@
             <h1 class="panel-title">
                 <a data-toggle="collapse" data-parent="#categories" href="#first-group-{{ echo $val->id; }}">{{ echo $val->name; }}</a>
             </h1>
-            <a href="/categories/new/{{ echo $val->id; }}" class="list-icon new-category">
+            <a href="categories/create/{{ echo $val->id; }}" class="list-icon new-category">
                 <i class="fa fa-plus-circle"></i>
             </a>
             <div class="clearfix"></div>
@@ -19,8 +19,8 @@
                         <h1 class="panel-title">
                             <a data-toggle="collapse" data-parent="#categories" href="#second-group-{{ echo $val2->id; }}">{{ echo $val2->name; }}</a>
                         </h1>
-                        <a href="/categories/new/{{ echo $val2->id; }}" class="list-icon new-category">
-                            <i class="fa f-plus-circle"></i>
+                        <a href="categories/new/{{ echo $val2->id; }}" class="list-icon new-category">
+                            <i class="fa fa-plus-circle"></i>
                         </a>
                         <div class="clearfix"></div>
                     </div>

@@ -8,14 +8,13 @@ W.block('content')
     </div>
     {{ 
         if (Session::has('message')) {
-            $message = Session::get('message');
-            $messageClass = Session::has('message-class') ? Session::get('message-class') : 'default';
+            $message = Session::getOnce('message');
+            $messageClass = Session::has('message-class') ? Session::getOnce('message-class') : 'default';
             echo '<div class="'.$messageClass.'">';
             foreach ($message as $message) {
                 echo '<p>'.$message.'</p>';
             }
             echo '</div>';
-            Session::destroy('message');
         }
     }}
     <form action="../categories" method="post" class="form-inline" role="form">
